@@ -1,0 +1,85 @@
+# BareGPS Route Maker
+
+Draw, shape and share a walking route directly on the map.
+
+**Current version: 0.1.0, build 1.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
+
+[Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker)
+
+## What it does
+
+- Draw a route by tapping the map; insert, move or delete waypoints and close loops.
+- Choose a route name, line colour and regional coordinate system.
+- Fetch terrain estimates and show distance, ascent, descent and an elevation profile.
+- Save the full route as GPX; share summary or full Route Cards as text/PDF.
+- Keep a local drawing with Undo/Redo. Save Route spans the full row on iOS/Android.
+- Up to 1,000 drawing waypoints, within the separate terrain sampling limit.
+
+## Terrain and Route Cards
+
+Route Cards default to 30 checkpoints, retaining start, finish and every named point. More than 30 names can exceed the target. Full Card shows all points. Text/PDF sharing follows the chosen view; distances and ascent use the full route geometry, and GPX retains every route point.
+
+Terrain uses Open Topo Data's Mapzen dataset, roughly 90-metre sampling and a 5,000-point job limit including added samples. Primary elevation totals show **u/a** while missing, incomplete or invalidated. Heights are unsmoothed estimates; noise can inflate ascent.
+
+Cancellation returns promptly and late results are ignored. Each complete response is bounded to 20 seconds and the full job to three minutes. On phones an active native request may finish in the background after cancellation, without applying its result.
+
+Lines connect points directly; they do not automatically follow paths. Check access and walkability. No navigation, activity recording, accounts, cloud sync or offline map packs are provided.
+
+## Run and build
+
+Requirements: Node.js with npm, installed dependencies, Xcode for iOS, Android SDK and Java 21 for Android.
+
+```sh
+npm ci
+npm run dev
+npm test
+npm run test:e2e
+npm run build
+npm run native:sync
+```
+
+The default browser tests cover this standalone product. Historical combined-app browser fixtures are retained under `tests/legacy-e2e/`; they assume the old tabs and are not the current acceptance suite. Shared low-level modules remain where needed for geometry, coordinates, terrain and export.
+
+```sh
+npm run ios
+npm run android
+```
+
+Native tests inherited from the combined project are historical until adapted to the standalone workflows; do not treat their earlier passes as validation of this release. Build/install and product-specific browser acceptance are recorded separately in `docs/testing/`.
+
+## Android signing and installation
+
+Application ID: `com.baregps.routemaker`. Public APKs must be release-signed and non-debuggable. Private signing material is kept outside the repository and excluded from bundles.
+
+```sh
+# Point this at your private signing properties; never commit them.
+export BAREGPS_ANDROID_SIGNING_PROPERTIES=/absolute/private/path/release.properties
+cd android
+./gradlew assembleRelease
+```
+
+The properties file supplies `storeFile`, `storePassword`, `keyAlias` and `keyPassword`. Keep the signing identity stable for future updates. `scripts/distribution/package-bundles.py` verifies the permanent certificate before packaging.
+
+## iOS distribution
+
+Bundle ID: `com.baregps.routemaker`. Open `ios/App/App.xcodeproj`, select your own development team and build for a connected phone. Public iOS downloads are **source bundles with prebuilt web assets**, not installable IPAs or TestFlight packages. No signing certificates, private keys or provisioning profiles are bundled. App Store/TestFlight distribution still requires its own archive, validation and acceptance.
+
+## Website and packages
+
+`npm run build:web` builds the preview for `/tools/baregps-route-maker/`. The Tools heading at appsbyonzy.dev lists Route Maker and Track Editor as separate sections, each with its own preview, Android APK/ZIP, iOS source ZIP, instructions and Git link. Publishing uses the existing Cloudflare Pages site, not a new hosting project. Its scoped worker relays validated terrain requests for the preview paths.
+
+```sh
+python3 scripts/distribution/package-bundles.py
+```
+
+Packaging excludes local settings, dependency trees, build caches and signing material. Verify manifest/checksum agreement and archive contents before publishing.
+
+## Storage, privacy and remaining work
+
+Each standalone product has its own app identity and local workspace key. Autosave is device/browser recovery, not a complete backup. Keep original GPX files and export important routes. This split intentionally does not migrate the former combined workspace.
+
+Map providers receive viewed map areas; terrain providers receive coordinates. Browser terrain uses the Cloudflare relay. Sharing sends files only to the destination selected by the user. The in-app guide is not a complete privacy policy.
+
+Outstanding release work includes physical-device failure/lifecycle testing, accessibility/readability, measured supported sizes, a user backup/restore path, documented provider capacity, privacy/support/licence publication and actual TestFlight acceptance. Do not infer App Store readiness from a successful local install.
+
+Copyright © AppsbyOnzy. Support: [appsbyonzy@gmail.com](mailto:appsbyonzy@gmail.com). Dependency and map credits are in About. No new source licence is implied by this split; third-party licences remain applicable.

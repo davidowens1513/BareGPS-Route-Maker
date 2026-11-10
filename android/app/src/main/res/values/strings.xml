@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BareGPS Route Maker</string>
+    <string name="title_activity_main">BareGPS Route Maker</string>
+    <string name="package_name">com.baregps.routemaker</string>
+    <string name="custom_url_scheme">com.baregps.routemaker</string>
+</resources>
