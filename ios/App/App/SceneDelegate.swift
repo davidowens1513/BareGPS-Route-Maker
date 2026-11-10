@@ -11,12 +11,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = BareBridgeViewController()
         window?.makeKeyAndVisible()
 
-        if !connectionOptions.urlContexts.isEmpty { IncomingGPX.shared.receive(connectionOptions.urlContexts.map { $0.url }) }
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        IncomingGPX.shared.receive(URLContexts.map { $0.url })
         SceneDelegateProxy.shared.scene(scene, openURLContexts: URLContexts)
     }
 

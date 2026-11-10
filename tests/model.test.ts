@@ -1,327 +1,82 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 import {
-  analytics,
-  MAX_POINTS,
-  distance,
   emptyWorkspace,
-  exportGPX,
-  join,
-  parseGPX,
-  reverse,
-  section,
-  split,
   validateWorkspace,
-  restoreSeparateWorkspace,
-  type Track,
+  restoreDrawingWorkspace,
+  analytics,
+  exportGPX,
 } from "../src/model";
-import { sampleGaps, enrichTerrain } from "../src/terrain";
-const track = (): Track => ({
-  id: "t",
-  name: "Hill & valley <route>",
-  source: "test.gpx",
-  kind: "track",
-  color: "#278aa2",
-  points: [
-    { lat: 56, lon: -5, ele: 100 },
-    { lat: 56.001, lon: -5, ele: 120 },
-    { lat: 56.002, lon: -5, ele: 110 },
-    { lat: 56.003, lon: -5, ele: 150 },
-    { lat: 56.004, lon: -5, ele: 130 },
-  ],
-});
-const gpx = (body: string) =>
-  `<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1">${body}</gpx>`;
-describe("track editing and walking totals", () => {
-  it("measures geodesic distance and sums every rise and fall", () => {
-    const a = analytics(track().points);
-    expect(a.length).toBeCloseTo(444.78, 1);
-    expect(a.ascent).toBe(60);
-    expect(a.descent).toBe(30);
-  });
-  it("counts a disconnected join in both walking distance and ascent", () => {
-    const t = track();
-    const next = {
-      ...track(),
-      points: [
-        { lat: 56.01, lon: -5, ele: 180 },
-        { lat: 56.011, lon: -5, ele: 200 },
-      ],
-    };
-    const first = join(null, t, { start: 1, end: 3 });
-    const joined = join(first, next, { start: 0, end: 1 });
-    const a = analytics(joined.points);
-    expect(first.color).toBe("#16724d");
-    expect(joined.color).toBe("#16724d");
-    expect(joined.points[3].gapBefore).toBe(true);
-    expect(a.length).toBeCloseTo(distance(t.points[1], next.points[1]), 3);
-    expect(a.ascent).toBe(90);
-    expect(a.gapDistance).toBeGreaterThan(700);
-    expect(a.estimatedGap).toBe(true);
-    expect(t.points[0].gapBefore).toBeUndefined();
-  });
-  it("does not create a gap when sections share their endpoint", () => {
-    const t = track();
-    const joined = join(join(null, t, { start: 0, end: 2 }), t, {
-      start: 2,
-      end: 4,
-    });
-    expect(joined.points).toHaveLength(5);
-    expect(analytics(joined.points).gapDistance).toBe(0);
-    expect(analytics(joined.points).ascent).toBe(60);
-  });
-  it("trims and splits without changing the source and shares the cut point", () => {
-    const t = track(),
-      copy = structuredClone(t);
-    const selected = section(t, { start: 1, end: 4 });
-    const [a, b] = split(selected, 1);
-    expect(a.points).toHaveLength(2);
-    expect(b.points).toHaveLength(3);
-    expect(a.points.at(-1)).toEqual(b.points[0]);
-    expect(analytics(a.points).length + analytics(b.points).length).toBeCloseTo(
-      analytics(selected.points).length,
-      8,
-    );
-    expect(t).toEqual(copy);
-    expect(() => split(t, 0)).toThrow();
-  });
-  it("reverses gap edge markers and swaps ascent/descent", () => {
-    const t = track();
-    t.points[2].gapBefore = true;
-    t.points[2].terrain = true;
-    const r = reverse(t);
-    expect(r.points[3].gapBefore).toBe(true);
-    expect(r.points[3].terrain).toBe(true);
-    expect(r.points[0].gapBefore).toBeUndefined();
-    expect(analytics(r.points).ascent).toBe(30);
-    expect(analytics(r.points).descent).toBe(60);
-    expect(analytics(r.points).gapDistance).toBeCloseTo(
-      analytics(t.points).gapDistance,
-      8,
-    );
-  });
-  it("reports partial ascent when elevation is missing, while retaining full distance", () => {
-    const t = track();
-    delete t.points[2].ele;
-    const a = analytics(t.points);
-    expect(a.missingEdges).toBe(2);
-    expect(a.length).toBeCloseTo(444.78, 1);
-    expect(a.ascent).toBe(20);
-  });
-  it("handles the maximum supported point count without argument-stack overflow", () => {
-    const points = Array.from({ length: MAX_POINTS }, (_, i) => ({
-      lat: 50,
-      lon: i / 100000,
-      ele: i % 100,
-    }));
-    expect(analytics(points).min).toBe(0);
-    expect(analytics(points).max).toBe(99);
-  });
-});
-describe("GPX integrity and input errors", () => {
-  it("defaults imported tracks to red, blue and pink across files and batches", () => {
-    const body =
-      '<trk><trkseg><trkpt lat="0" lon="0"/><trkpt lat="0" lon="1"/></trkseg></trk>';
-    const first = parseGPX(gpx(body), "first.gpx");
-    const next = parseGPX(gpx(body + body), "next.gpx", first.length);
-    expect([...first, ...next].map((track) => track.color)).toEqual([
-      "#d32f2f",
-      "#2563eb",
-      "#ec4899",
-    ]);
-    const coloured = track();
-    expect(parseGPX(exportGPX(coloured), "saved.gpx", 2)[0].color).toBe(
-      coloured.color,
-    );
-  });
-  it("round-trips names, colour, elevations, times and dashed connections", () => {
-    const t = track();
-    t.points[2].gapBefore = true;
-    t.points[2].terrain = true;
-    t.points[0].time = "2026-01-01T12:00:00Z";
-    const [result] = parseGPX(exportGPX(t), "roundtrip.gpx");
-    expect(result.name).toBe(t.name);
-    expect(result.color).toBe(t.color);
-    expect(result.points).toEqual(t.points);
-    expect(analytics(result.points)).toEqual(analytics(t.points));
-  });
-  it("reads multiple tracks, namespaces, GPX routes and segment gaps", () => {
-    const tracks = parseGPX(
-      gpx(
-        '<trk><name>One</name><trkseg><trkpt lat="0" lon="0"><ele>0</ele></trkpt><trkpt lat="0" lon="1"/></trkseg><trkseg><trkpt lat="0" lon="2"/><trkpt lat="0" lon="3"/></trkseg></trk><rte><name>Two</name><rtept lat="1" lon="1"/><rtept lat="2" lon="2"/></rte>',
-      ),
-      "multiple.gpx",
-    );
-    expect(tracks).toHaveLength(2);
-    expect(tracks[0].points[0].ele).toBe(0);
-    expect(tracks[0].points[2].gapBefore).toBe(true);
-    expect(analytics(tracks[0].points).length).toBeGreaterThan(333000);
-    expect(tracks[1].name).toBe("Two");
-  });
-  it.each([
-    "garbage",
-    "<gpx><broken>",
-    "<html></html>",
-    gpx('<wpt lat="1" lon="2"/>'),
-    gpx(
-      '<trk><trkseg><trkpt lat="91" lon="0"/><trkpt lat="1" lon="1"/></trkseg></trk>',
-    ),
-    gpx(
-      '<trk><trkseg><trkpt lat="" lon="0"/><trkpt lat="1" lon="1"/></trkseg></trk>',
-    ),
-    gpx(
-      '<rte><rtept lat="1" lon="1"><ele>NaN</ele></rtept><rtept lat="2" lon="2"/></rte>',
-    ),
-    '<!DOCTYPE gpx [<!ENTITY a "boom">]><gpx/>',
-  ])(
-    "rejects invalid/empty/unsafe files without producing partial tracks: %s",
-    (xml) => {
-      expect(() => parseGPX(xml, "bad.gpx")).toThrow();
-    },
-  );
-  it("validates saved workspaces before restoring", () => {
-    const w = emptyWorkspace();
-    w.tracks = [track()];
-    w.activeId = "t";
-    expect(validateWorkspace(w)).toBe(true);
-    expect(
-      validateWorkspace({
-        ...w,
-        tracks: [{ ...track(), color: '\" onload=alert(1)' }],
-      }),
-    ).toBe(false);
-    expect(
-      validateWorkspace({
-        ...w,
-        tracks: [
-          {
-            ...track(),
-            points: [
-              { lat: NaN, lon: 0 },
-              { lat: 0, lon: 0 },
-            ],
-          },
-        ],
-      }),
-    ).toBe(false);
-    expect(validateWorkspace({ ...w, activeId: "missing" })).toBe(false);
-  });
-});
-describe("terrain sampling", () => {
-  it("samples the entire connection without changing the original track", () => {
-    const t = track();
-    t.points[3].gapBefore = true;
-    const sampled = sampleGaps(t);
-    expect(sampled.points.length).toBeGreaterThan(t.points.length);
-    expect(t.points.length).toBe(5);
-    expect(analytics(sampled.points).length).toBeCloseTo(
-      analytics(t.points).length,
-      1,
-    );
-    const samples = sampled.points.filter((p) => p.gapBefore);
-    expect(
-      samples.every((p, i) => i === 0 || distance(samples[i - 1], p) <= 91),
-    ).toBe(true);
-  });
-  it("uses intermediate terrain gains rather than only endpoint elevation", async () => {
-    const t = track();
-    t.points = [
-      { lat: 56, lon: -5, ele: 100 },
-      { lat: 56.003, lon: -5, ele: 100, gapBefore: true },
-    ];
-    const original = structuredClone(t);
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          status: "OK",
-          results: [
-            { elevation: 140 },
-            { elevation: 180 },
-            { elevation: 140 },
-            { elevation: 100 },
-            { elevation: 100 },
-          ],
-        }),
-        { status: 200 },
-      ),
-    );
-    const result = await enrichTerrain(
-      t,
-      () => {},
-      new AbortController().signal,
-    );
-    expect(analytics(result.points).ascent).toBe(80);
-    expect(analytics(result.points).estimatedGap).toBe(false);
-    expect(t).toEqual(original);
-    fetchMock.mockRestore();
-  });
-  it("leaves source untouched if the service returns missing heights", async () => {
-    const t = track();
-    t.points[2].gapBefore = true;
-    const original = structuredClone(t);
-    const mock = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValue(
-        new Response(JSON.stringify({ status: "OK", results: [] })),
-      );
-    await expect(
-      enrichTerrain(t, () => {}, new AbortController().signal),
-    ).rejects.toThrow("unavailable");
-    expect(t).toEqual(original);
-    mock.mockRestore();
-  });
-});
-import { vi } from "vitest";
-
-it("recovers shared-screen work into separate screens without losing routes or terrain", () => {
-  const imported = track();
-  const created = { ...track(), id: "drawing", kind: "route" as const };
-  const joined = { ...track(), id: "joined", kind: "route" as const };
+import { newCreatedRoute } from "../src/create";
+it("validates and restores drawings without retaining Editor state", () => {
+  const created = {
+    ...newCreatedRoute(),
+    points: [
+      { lat: 53, lon: -6 },
+      { lat: 53.001, lon: -6 },
+    ],
+  };
   const saved = {
     ...emptyWorkspace(),
-    tool: "edit" as const,
-    tracks: [imported],
     created,
-    createdTerrain: { ...created, id: "terrain" },
-    route: joined,
-    activeId: created.id,
-    selection: { start: 1, end: 3 },
+    createdTerrain: structuredClone(created),
+    tracks: [{ id: "old" }],
+    routePlan: [{}],
   };
   expect(validateWorkspace(saved)).toBe(true);
-  const restored = restoreSeparateWorkspace(saved);
-  expect(restored.created).toEqual(saved.created);
-  expect(restored.createdTerrain).toEqual(saved.createdTerrain);
-  expect(restored.tracks).toEqual(saved.tracks);
-  expect(restored.route).toEqual(saved.route);
-  expect(restored.activeId).toBe(joined.id);
-  expect(restored.selection).toEqual({ start: 0, end: 4 });
-  expect(restored.tool).toBeUndefined();
-  expect(saved.activeId).toBe(created.id);
-  expect(validateWorkspace(restored)).toBe(true);
-  const drawingOnly = restoreSeparateWorkspace({
-    ...saved,
-    tracks: [],
-    route: null,
-  });
-  expect(drawingOnly.activeId).toBeNull();
-  expect(drawingOnly.created).toEqual(created);
+  const restored = restoreDrawingWorkspace(saved);
+  expect(restored).toEqual({ version: 1, created, createdTerrain: created });
+  expect(restored.created).not.toBe(saved.created);
+  expect(saved.tracks).toHaveLength(1);
 });
-
-describe("5,000-point limit", () => {
-  it("accepts 5,000 GPX points and rejects 5,001", () => {
-    const point = '<trkpt lat="53" lon="-6"/>';
-    const xml = (count: number) =>
-      gpx("<trk><trkseg>" + point.repeat(count) + "</trkseg></trk>");
-    expect(parseGPX(xml(MAX_POINTS), "limit.gpx")[0].points).toHaveLength(5000);
-    expect(() => parseGPX(xml(MAX_POINTS + 1), "large.gpx")).toThrow("5,000");
-  });
-  it("rejects terrain expansion beyond 5,000 without modifying the input", () => {
-    const t = track();
-    t.points = Array.from({ length: MAX_POINTS }, (_, i) => ({
-      lat: 53 + i * 0.00001,
-      lon: -6,
-    }));
-    t.points[1] = { lat: 53.01, lon: -6, gapBefore: true };
-    expect(() => sampleGaps(t)).toThrow("point limit");
-    expect(t.points).toHaveLength(MAX_POINTS);
-  });
+it("rejects invalid or oversized drawing and terrain data", () => {
+  const created = newCreatedRoute();
+  expect(validateWorkspace(emptyWorkspace())).toBe(true);
+  expect(validateWorkspace({ version: 2 })).toBe(false);
+  expect(
+    validateWorkspace({
+      version: 1,
+      created: { ...created, points: Array(1001).fill({ lat: 53, lon: -6 }) },
+    }),
+  ).toBe(false);
+  expect(
+    validateWorkspace({
+      version: 1,
+      createdTerrain: {
+        ...created,
+        points: Array(5001).fill({ lat: 53, lon: -6 }),
+      },
+    }),
+  ).toBe(false);
+  expect(
+    validateWorkspace({
+      version: 1,
+      created: { ...created, points: [{ lat: NaN, lon: -6 }] },
+    }),
+  ).toBe(false);
+  expect(
+    validateWorkspace({
+      version: 1,
+      created: { ...created, points: [{ lat: 53, lon: -6, ele: Infinity }] },
+    }),
+  ).toBe(false);
+});
+it("keeps full route metrics and escapes names in exported GPX", () => {
+  const route = {
+    ...newCreatedRoute(),
+    name: "Gate & <hill>",
+    points: [
+      { lat: 53, lon: -6, ele: 10 },
+      { lat: 53.001, lon: -6, ele: 30 },
+      { lat: 53.002, lon: -6, ele: 20 },
+    ],
+  };
+  expect(analytics(route.points).ascent).toBe(20);
+  expect(analytics(route.points).descent).toBe(10);
+  const doc = new DOMParser().parseFromString(
+    exportGPX(route),
+    "application/xml",
+  );
+  expect(doc.querySelector("parsererror")).toBeNull();
+  expect(doc.querySelector("trk name")!.textContent).toBe(route.name);
+  expect(doc.querySelectorAll("trkpt")).toHaveLength(3);
 });

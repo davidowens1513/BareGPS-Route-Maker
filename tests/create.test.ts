@@ -11,7 +11,6 @@ import {
   emptyWorkspace,
   validateWorkspace,
   exportGPX,
-  parseGPX,
 } from "../src/model";
 import { enrichTerrain, sampleGaps } from "../src/terrain";
 const a = { lat: 53.01, lon: -6.33 },
@@ -28,7 +27,7 @@ describe("created walking routes", () => {
     expect(original.points).toEqual([a, b]);
     expect(analytics(inserted.points).length).toBeGreaterThan(200);
     expect(
-      parseGPX(exportGPX(inserted), "route.gpx")[0].points.map(
+      readExport(exportGPX(inserted), "route.gpx")[0].points.map(
         ({ lat, lon }) => ({ lat, lon }),
       ),
     ).toEqual([a, mid, b]);
@@ -134,7 +133,7 @@ describe("circular route drawing", () => {
     expect(analytics(closed.points).length).toBeGreaterThan(
       analytics(original.points).length,
     );
-    expect(isClosedRoute(parseGPX(exportGPX(closed), "loop.gpx")[0])).toBe(
+    expect(isClosedRoute(readExport(exportGPX(closed), "loop.gpx")[0])).toBe(
       true,
     );
     expect(closeRoute(closed)).toBe(closed);
@@ -168,7 +167,7 @@ it("keeps optional point names through route changes and GPX export", () => {
     original.points[0].name,
     "Summit",
   ]);
-  const restored = parseGPX(exportGPX(removed), "named.gpx")[0];
+  const restored = readExport(exportGPX(removed), "named.gpx")[0];
   expect(restored.points.map((p) => p.name)).toEqual(
     removed.points.map((p) => p.name),
   );
@@ -180,3 +179,21 @@ it("keeps optional point names through route changes and GPX export", () => {
     removed.points.map((p) => p.name),
   );
 });
+
+// Read the exported XML independently; Maker has no GPX importer.
+function readExport(xml: string, _filename: string) {
+  const doc = new DOMParser().parseFromString(xml, "application/xml");
+  expect(doc.querySelector("parsererror")).toBeNull();
+  return [
+    {
+      points: Array.from(doc.querySelectorAll("trkpt")).map((el) => ({
+        lat: Number(el.getAttribute("lat")),
+        lon: Number(el.getAttribute("lon")),
+        name: el.querySelector("name")?.textContent || undefined,
+        ele: el.querySelector("ele")
+          ? Number(el.querySelector("ele")!.textContent)
+          : undefined,
+      })),
+    },
+  ];
+}

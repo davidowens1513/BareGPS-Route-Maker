@@ -20,7 +20,7 @@ test("standalone Maker draws, exports GPX and provides focused Settings and Abou
   await expect(page.getByRole("tab")).toHaveCount(0);
   await expect(page.locator("#open-in-edit")).toHaveCount(0);
   await expect(page.locator("#create-map")).toBeVisible();
-  await expect(page.locator("#editor")).toBeHidden();
+  await expect(page.locator("#editor")).toHaveCount(0);
   await page.locator("#create-map").click({ position: { x: 100, y: 100 } });
   await page.locator("#create-map").click({ position: { x: 180, y: 180 } });
   await expect(page.locator("#waypoint-count")).toHaveText("2");
@@ -69,4 +69,30 @@ test("native Maker gives Save Route the full action row", async ({ page }) => {
     return parseFloat(s.paddingLeft) + parseFloat(s.paddingRight);
   });
   expect(save!.width).toBeGreaterThan(row!.width - padding - 3);
+});
+
+test("one drawing map supports undo, point naming and route colour without Editor controls", async ({
+  page,
+}) => {
+  await expect(page.locator(".leaflet-container")).toHaveCount(1);
+  await expect(page.locator("#map")).toHaveCount(0);
+  await page.locator("#create-map").click({ position: { x: 100, y: 100 } });
+  await page.locator("#create-map").click({ position: { x: 180, y: 180 } });
+  await expect(page.locator("#waypoint-count")).toHaveText("2");
+  await page.locator("#undo").click();
+  await expect(page.locator("#waypoint-count")).toHaveText("1");
+  await page.locator("#redo").click();
+  await expect(page.locator("#waypoint-count")).toHaveText("2");
+  await page.locator("#settings").click();
+  await page.locator("#colour-hex").fill("#aa3344");
+  await page.getByRole("button", { name: "Apply colour", exact: true }).click();
+  await expect(page.locator("#colour-status")).toContainText(
+    "Route colour applied",
+  );
+  await page.locator("#allow-point-naming").click();
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+  await page.locator('[data-point-name="0"]').fill("Gate");
+  await page.locator("#expand-card").click();
+  await page.locator("#create-share").click();
+  await expect(page.locator("#routecard-text")).toContainText("Gate");
 });

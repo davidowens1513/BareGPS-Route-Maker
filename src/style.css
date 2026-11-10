@@ -289,10 +289,6 @@ h3 {
   background: var(--divider);
   margin: 0 6px;
 }
-#map {
-  height: 355px;
-  background: #e9eddf;
-}
 .leaflet-container {
   font-family: inherit;
 }
@@ -402,9 +398,6 @@ h3 {
   line-height: 1.8;
   color: #75816e;
   margin: 11px 0 18px;
-}
-.map-empty #empty-import {
-  transform: translateY(28px);
 }
 .map-legend {
   position: absolute;
@@ -589,11 +582,6 @@ h3 {
 .profile-note-slot > .elevation-note {
   grid-area: 1 / 1;
 }
-.editor-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.12fr;
-  gap: 18px;
-}
 .card {
   border: 1px solid var(--border);
   border-radius: 11px;
@@ -634,82 +622,6 @@ h3 {
   background: #f5f7f1;
   border-color: var(--border);
 }
-.track-list {
-  padding: 4px 8px;
-  max-height: 280px;
-  overflow: auto;
-  min-height: 0;
-}
-.track-row {
-  display: flex;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  margin-bottom: 5px;
-  align-items: center;
-  padding-right: 5px;
-}
-.track-row.active {
-  background: #eff5e9;
-  border-color: var(--border);
-}
-.track-row:not(.active):hover {
-  background: #f7f8f4;
-}
-.track-select {
-  border: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: calc(100% - 30px);
-  text-align: left;
-  padding: 10px 7px 10px 12px;
-  min-height: 62px;
-  border-radius: 8px;
-  background: transparent;
-}
-.track-symbol {
-  color: var(--track-color);
-  background: color-mix(in srgb, var(--track-color) 8%, white);
-  border: 1px solid color-mix(in srgb, var(--track-color) 16%, white);
-  width: 35px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-.track-text {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  min-width: 0;
-  flex: 1;
-}
-.track-text strong {
-  font-size: 12px;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.track-text small {
-  font-size: 9px;
-  color: #89927f;
-  white-space: nowrap;
-}
-.track-text small span {
-  margin: 0 4px;
-  color: #b6bead;
-}
-.active-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  margin-right: 5px;
-  flex-shrink: 0;
-}
 .delete-track {
   width: 29px;
   height: 32px;
@@ -723,21 +635,6 @@ h3 {
   color: #97a18e;
   padding: 14px 20px;
   border-top: 1px solid var(--border);
-}
-.tracks-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 6px 10px;
-  color: #8b9a80;
-}
-.tracks-empty p {
-  margin: 4px 0;
-  font-size: 11px;
-  line-height: 1.5;
-  color: #99a38f;
 }
 .section-card #section-controls {
   padding: 8px 22px 10px;
@@ -1146,9 +1043,6 @@ dialog p {
   border: 0;
   border-radius: 0;
 }
-.map-expanded #map {
-  height: calc(100% - 49px);
-}
 .map-expanded .analytics {
   position: fixed;
   bottom: 0;
@@ -1167,9 +1061,6 @@ dialog p {
 @media (min-width: 1500px) {
   main {
     max-width: 1320px;
-  }
-  #map {
-    height: 410px;
   }
 }
 @media (max-width: 900px) {
@@ -1201,9 +1092,6 @@ dialog p {
   .analytics {
     grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr);
   }
-  .editor-grid {
-    gap: 14px;
-  }
   .section-card #section-controls {
     padding: 8px 17px 10px;
   }
@@ -1216,13 +1104,6 @@ dialog p {
   .edit-buttons .button {
     padding: 7px;
     font-size: 9px;
-  }
-  .track-text small {
-    font-size: 8px;
-  }
-  .track-select {
-    gap: 9px;
-    padding-left: 7px;
   }
 }
 @media (max-width: 640px) {
@@ -1326,9 +1207,6 @@ dialog p {
   .toolbar-divider {
     margin: 0 2px;
   }
-  #map {
-    height: 300px;
-  }
   .map-empty {
     top: 44px;
   }
@@ -1417,31 +1295,12 @@ dialog p {
   .elevation-note {
     font-size: 9px;
   }
-  .editor-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .track-list {
-    min-height: 0;
-    max-height: 225px;
-  }
   .card-heading {
     height: 44px;
     padding: 0 17px;
   }
   .card-heading h2 {
     font-size: 13px;
-  }
-  .track-select {
-    min-height: 59px;
-    padding: 10px 10px;
-    gap: 12px;
-  }
-  .track-text strong {
-    font-size: 12px;
-  }
-  .track-text small {
-    font-size: 9px;
   }
   .section-card #section-controls {
     padding: 8px 20px 13px;
@@ -1533,9 +1392,6 @@ dialog p {
     width: calc(100vw - 28px);
     max-width: 450px;
   }
-  .map-expanded #map {
-    height: calc(100% - 44px);
-  }
   .map-expanded .analytics {
     padding-top: 14px;
   }
@@ -1595,34 +1451,6 @@ dialog p {
   height: 355px;
   background: #e9eddf;
   z-index: 0;
-}
-.mode-tabs {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: #f7f9f3;
-  height: 34px;
-  padding: 2px 8px;
-  border-bottom: 1px solid var(--border);
-}
-.mode-tabs [role="tab"] {
-  border: 1px solid transparent;
-  border-radius: 7px;
-  background: transparent;
-  padding: 4px 19px;
-  font-weight: 600;
-  color: #b3261e;
-}
-.mode-tabs [aria-selected="true"] {
-  background: white;
-  border-color: #b3261e;
-  color: #b3261e;
-  box-shadow: 0 1px 3px #25402b08;
-}
-#mode-caption {
-  margin-left: auto;
-  font-size: 11px;
-  color: #7b8b73;
 }
 #create-map-view {
   position: relative;
@@ -1805,11 +1633,9 @@ dialog p {
 .map-error {
   top: 112px;
 }
-.map-expanded #edit-map-view,
 .map-expanded #create-map-view {
   height: calc(100% - 101px);
 }
-.map-expanded #map,
 .map-expanded #create-map {
   height: 100%;
 }
@@ -1821,17 +1647,6 @@ dialog p {
 @media (max-width: 640px) {
   #create-map {
     height: 300px;
-  }
-  #mode-caption {
-    font-size: 9px;
-    max-width: 145px;
-    text-align: right;
-  }
-  .mode-tabs {
-    padding: 2px 8px;
-  }
-  .mode-tabs [role="tab"] {
-    padding: 4px 15px;
   }
   .map-empty {
     top: 95px;
@@ -1863,7 +1678,6 @@ dialog p {
   .waypoint-table td {
     padding: 8px 12px;
   }
-  .map-expanded #edit-map-view,
   .map-expanded #create-map-view {
     height: calc(100% - 95px);
   }
@@ -2037,9 +1851,6 @@ dialog p {
   width: 28px;
   height: 26px;
 }
-#edit-map-view {
-  position: relative;
-}
 .map-coordinates {
   position: absolute;
   z-index: 500;
@@ -2113,12 +1924,10 @@ dialog p {
   display: flex;
   flex-direction: column;
 }
-.map-expanded .mode-tabs,
 .map-expanded .map-toolbar,
 .map-expanded .create-tools {
   flex-shrink: 0;
 }
-.map-expanded #edit-map-view,
 .map-expanded #create-map-view {
   flex: 1;
   min-height: 0;
@@ -2707,66 +2516,8 @@ body.card-expanded:not(.point-naming) #create-card .waypoint-table {
 .card-expanded #create-card > .card-source-note {
   flex-shrink: 0;
 }
-body:not(.creating) #create-card .compact-delete {
-  display: none;
-}
-body:not(.creating):not(.card-expanded) #create-card .waypoint-table {
-  width: calc(209.25px + 14ch);
-}
-body:not(.creating):not(.point-naming):not(.card-expanded)
-  #create-card
-  .waypoint-table {
-  width: calc(173.625px + 14ch);
-}
-body:not(.creating) #create-card .waypoint-table td.waypoint-empty {
-  font-family: inherit;
-  font-size: 11px;
-  font-weight: 400;
-  color: #819273;
-  text-align: center;
-}
-@media (max-width: 350px) {
-  body:not(.creating):not(.card-expanded) #create-card .waypoint-table {
-    width: 100%;
-  }
-  body:not(.creating):not(.point-naming):not(.card-expanded)
-    #create-card
-    .waypoint-table {
-    width: 100%;
-  }
-}
 
 /* Compact Edit track list. */
-.track-list {
-  padding: 2px 6px;
-}
-.track-row {
-  margin-bottom: 1px;
-  padding-right: 3px;
-}
-.track-select {
-  min-height: 32px;
-  gap: 7px;
-  padding: 2px 6px;
-}
-.track-symbol {
-  width: 22px;
-  height: 22px;
-  border-radius: 5px;
-}
-.track-symbol svg {
-  width: 14px;
-  height: 14px;
-}
-.track-text {
-  gap: 2px;
-}
-.track-text strong {
-  line-height: 1.2;
-}
-.track-text small {
-  line-height: 1.2;
-}
 
 #create-card .waypoint-table .card-spacer td {
   padding: 0 !important;
@@ -2800,9 +2551,6 @@ body:not(.creating) #create-card .waypoint-table td.waypoint-empty {
 .card-footnote,
 .elevation-note {
   border-color: var(--divider);
-}
-.track-row:not(.active) {
-  border-bottom-color: var(--divider);
 }
 #create-card .waypoint-table th,
 #create-card .waypoint-table td {
@@ -2903,44 +2651,10 @@ body:not(.creating) #create-card .waypoint-table td.waypoint-empty {
 .route-plan-buttons .badge {
   margin-left: 2px;
 }
-dialog.plan-dialog {
-  width: min(620px, calc(100vw - 24px));
-}
 .plan-scroll {
   max-height: min(42vh, 360px);
   overflow: auto;
   border: 1px solid var(--grid-line);
-}
-.plan-grid {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11px;
-}
-.plan-grid th,
-.plan-grid td {
-  border: 1px solid var(--grid-line);
-  padding: 7px 6px;
-}
-.plan-grid th {
-  position: sticky;
-  top: 0;
-  background: #edf3e8;
-  text-align: center;
-  z-index: 1;
-}
-.plan-grid td {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-.plan-grid td:nth-child(2) {
-  text-align: left;
-}
-.plan-grid tbody tr {
-  cursor: pointer;
-}
-.plan-grid tr.selected {
-  background: #e5efdf;
-  box-shadow: inset 3px 0 var(--green);
 }
 .plan-select {
   width: 100%;
@@ -2956,57 +2670,12 @@ dialog.plan-dialog {
   outline: 2px solid var(--green);
   outline-offset: 2px;
 }
-.plan-grid td.plan-empty {
-  text-align: center;
-  padding: 16px 10px;
-  color: #647b56;
-}
 
 /* Let the planning grid shrink before the confirmation controls leave the screen. */
-dialog.plan-dialog {
-  --plan-dialog-padding: 24px;
-  padding: var(--plan-dialog-padding);
-  max-height: calc(100dvh - 24px);
-  overflow: hidden;
-}
-.plan-dialog #dialog-content {
-  display: flex;
-  flex-direction: column;
-  max-height: calc(100dvh - 26px - 2 * var(--plan-dialog-padding));
-}
-.plan-dialog .dialog-heading {
-  margin-bottom: 16px;
-}
-.plan-dialog .dialog-heading,
-.plan-dialog .dialog-note,
-.plan-dialog .plan-row-actions,
-.plan-dialog .dialog-actions {
-  flex-shrink: 0;
-}
-.plan-dialog .plan-scroll {
-  flex: 0 1 auto;
-  min-height: 50px;
-}
-
-.mode-tabs [role="tab"] {
-  white-space: nowrap;
-}
-@media (max-width: 640px) {
-  .mode-tabs [role="tab"] {
-    padding-inline: 10px;
-  }
-  #mode-caption {
-    display: none;
-  }
-}
 
 /* Keep the single route-name field and Preview together without squeezing phones. */
 .create-settings label:first-child {
   min-width: 0;
-}
-#create-card #preview-route {
-  flex-shrink: 0;
-  margin-bottom: 1px;
 }
 
 @media (max-width: 350px) {
@@ -3052,41 +2721,6 @@ dialog.plan-dialog {
   border-color: #cadabd;
   font-weight: 650;
 }
-.input-handle-options {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 8px 0;
-}
-.input-handle-options[hidden] {
-  display: none;
-}
-.input-handle-options label,
-.input-handle-options > span {
-  font-size: 12px;
-}
-.input-handle-options input {
-  width: 76px;
-  min-width: 0;
-  padding: 6px;
-}
-.input-handle-options p {
-  flex-basis: 100%;
-  margin: 0;
-  font-size: 12px;
-}
-#input-selected-point {
-  flex-basis: 100%;
-}
-.input-edit-actions {
-  display: flex;
-  gap: 6px;
-  margin: 8px 0;
-}
-.input-edit-actions > button {
-  flex: 1;
-}
 .create-tools .drawing-modes {
   width: 100%;
   display: grid;
@@ -3104,47 +2738,12 @@ dialog.plan-dialog {
     padding-inline: 2px;
   }
 }
-#map.input-drawing {
-  cursor: crosshair;
-}
-.input-handle span {
-  background: var(--input-colour);
-  font-size: 11px;
-  min-width: 25px;
-}
-.input-handle span:after,
-.input-handle:nth-child(2) span:after {
-  background: var(--input-colour);
-}
-.input-handle.selected span,
 #create-map .track-handle.selected span {
   outline: 3px solid white;
   box-shadow: 0 0 0 5px #1e293b;
 }
 
 /* Keep Edit tools visible while selecting A–B as well as editing points. */
-body:not(.creating) .map-empty {
-  bottom: 46px;
-}
-body:not(.creating) .map-legend {
-  bottom: 60px;
-}
-
-.input-selection-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin: 8px 0;
-  font-size: 12px;
-}
-.input-selection-row #input-selected-point {
-  flex-basis: auto;
-}
-.input-selection-row .line-color {
-  margin: 0;
-  flex-shrink: 0;
-}
 .input-trim-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3168,47 +2767,6 @@ body:not(.creating) .map-legend {
 }
 
 /* Secondary input actions share one equal-width row. */
-.input-extra-tools {
-  height: auto;
-  min-height: 46px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding-block: 5px;
-}
-.input-extra-tools .drawing-modes button {
-  font-size: clamp(9px, 2.65vw, 12px);
-  padding-inline: 1px;
-  min-width: 0;
-}
-.input-selection-status {
-  font-size: 10px;
-  line-height: 1.3;
-  text-align: center;
-  margin: 0;
-  color: var(--muted);
-}
-.input-track-colour {
-  width: 25.2px;
-  height: 25.2px;
-  border-width: 2.4px;
-  flex-shrink: 0;
-  margin-right: 5px;
-}
-.track-row .track-select {
-  flex: 1;
-  min-width: 0;
-  width: auto;
-}
-.map-expanded .input-extra-tools {
-  flex-shrink: 0;
-}
-body:not(.creating) .map-empty {
-  bottom: 107px;
-}
-body:not(.creating) .map-legend {
-  bottom: 121px;
-}
 
 /* All map editing actions have a visible button surface. */
 .create-tools .drawing-modes button {
@@ -3229,48 +2787,17 @@ body:not(.creating) .map-legend {
   box-shadow: none;
   opacity: 0.65;
 }
-.input-extra-tools {
-  height: 46px;
-  min-height: 46px;
-  gap: 0;
-}
-.plan-dialog #plan-replace {
-  flex-shrink: 0;
-  width: 100%;
-  margin-top: 6px;
-}
 
 .input-plan-controls {
   display: flow-root;
   padding: 8px;
   background: #fff;
 }
-.route-plan-controls {
-  width: 100%;
-}
-.input-plan-controls > .button,
-.route-plan-controls > .button {
+.input-plan-controls > .button {
   width: 100%;
   min-height: 43px;
   color: #fff;
   background: var(--green);
-}
-.route-plan-controls .badge {
-  color: #fff;
-  background: #ffffff24;
-  border-color: #ffffff55;
-}
-#input-edit-controls {
-  flex-shrink: 0;
-}
-#editor.editor-grid {
-  grid-template-columns: minmax(0, 1fr);
-}
-body:not(.creating) .map-empty {
-  bottom: var(--input-controls-height, 166px);
-}
-body:not(.creating) .map-legend {
-  bottom: calc(var(--input-controls-height, 166px) + 14px);
 }
 
 /* Keep map warnings clear of the current-position button. */
@@ -3339,39 +2866,6 @@ body:not(.creating) .map-legend {
   }
 }
 
-.preview-mode {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 600;
-  min-height: 46px;
-  padding: 6px 10px 6px 6px;
-  gap: 7px;
-  border: 2px solid #3f6747;
-  background: #fff;
-  color: #254b2d;
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: 0 2px 8px #17321f40;
-}
-.preview-mode > span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: 1px solid #254b2d;
-  border-radius: 6px;
-  background: #3f6747;
-  color: #fff;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1;
-}
-.preview-mode[hidden] {
-  display: none;
-}
-
 /* Browser cards show the complete route measures without expanding. */
 body.web-route-card #create-card.card .waypoint-scroll .waypoint-table {
   width: 100%;
@@ -3416,13 +2910,6 @@ body.creating:not(.card-expanded) #create-card .create-buttons {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-#open-in-edit[hidden] {
-  display: none;
-}
-
-.card-expanded #create-card #preview-route {
-  display: none;
-}
 
 .about-dialog .branded-dialog-heading h2 {
   color: var(--brand-green);
@@ -3431,139 +2918,9 @@ body.creating:not(.card-expanded) #create-card .create-buttons {
   line-height: 1.25;
 }
 
-.track-row .rename-track {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  margin-right: 3px;
-  color: #3f6747;
-}
-
 /* Keep plan membership between the input colour and remove controls. */
-.input-plan-status {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 22px;
-  color: #3f6747;
-}
 
 /* A compact starting guide in Edit's existing Open Files panel. */
-body:not(.creating) .map-empty {
-  justify-content: center;
-  padding: 12px;
-}
-.edit-workflow {
-  width: min(600px, 100%);
-  padding: 18px 16px;
-  border: 1px solid #dce5d3;
-  border-radius: 14px;
-  background: #fffffff5;
-  box-shadow: 0 6px 24px #17321f12;
-  pointer-events: auto;
-}
-.map-empty .edit-workflow h2 {
-  margin: 0 0 16px;
-  color: #2c4c37;
-  font-size: 16px;
-  letter-spacing: -0.3px;
-}
-.edit-workflow ol {
-  display: flex;
-  align-items: flex-start;
-  gap: 18px;
-  padding: 0;
-  margin: 0 0 18px;
-  list-style: none;
-}
-.edit-workflow li {
-  position: relative;
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  color: #3f5144;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.35;
-}
-.edit-workflow li:not(:last-child)::after {
-  position: absolute;
-  top: 6px;
-  left: calc(100% + 2px);
-  content: "→";
-  color: #8a9e80;
-  font-size: 16px;
-}
-.workflow-number {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #edf3e8;
-  color: #3f6747;
-  font-size: 12px;
-}
-.edit-workflow li:first-child .workflow-number {
-  background: #3f6747;
-  color: white;
-}
-.map-empty .edit-workflow #empty-import {
-  transform: none;
-}
-@media (max-width: 560px) {
-  .edit-workflow {
-    padding: 14px 10px;
-  }
-  .map-empty .edit-workflow h2 {
-    font-size: 15px;
-    margin-bottom: 12px;
-  }
-  .edit-workflow ol {
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-  .edit-workflow li {
-    font-size: 11px;
-    gap: 6px;
-  }
-  .edit-workflow li:not(:last-child)::after {
-    left: calc(100% - 1px);
-    font-size: 12px;
-  }
-  .workflow-number {
-    width: 24px;
-    height: 24px;
-  }
-}
-
-.workflow-repeat {
-  position: relative;
-  width: 60%;
-  height: 28px;
-  margin: -8px 0 12px;
-  color: #64845b;
-}
-.workflow-repeat svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.workflow-repeat span {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0 7px;
-  background: #fff;
-  color: #3f6747;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 16px;
-}
 
 #create-card .card-heading h2 {
   flex: 1;
@@ -3604,15 +2961,11 @@ body:not(.creating) .map-empty {
 .simplify-legend .simplified-line {
   border-color: #16724d;
 }
-#input-extra-tools .drawing-modes {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-}
 
 /* Standalone product: no mode switch or mode caption. */
 .map-empty {
   top: 34px;
 }
-.map-expanded #edit-map-view,
 .map-expanded #create-map-view {
   height: calc(100% - 34px);
 }
