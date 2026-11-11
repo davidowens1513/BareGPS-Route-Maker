@@ -54,6 +54,14 @@ test("standalone Maker draws, exports GPX and provides focused Settings and Abou
   const xml = await fs.readFile((await file.path())!, "utf8");
   expect(xml).toContain('creator="BareGPS Route Maker"');
   expect(xml.match(/<trkpt /g)!.length).toBeGreaterThanOrEqual(2);
+  await expect(page.locator("#expand")).toBeEnabled();
+  await expect(page.locator("#expand-card")).toBeEnabled();
+  await page.locator("#expand-card").click();
+  await expect(page.locator("body")).toHaveClass(/card-expanded/);
+  await page.locator("#expand-card").click();
+  await page.locator("#expand").click();
+  await expect(page.locator("body")).toHaveClass(/map-expanded/);
+  await page.locator("#expand").click();
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -95,4 +103,65 @@ test("one drawing map supports undo, point naming and route colour without Edito
   await page.locator("#expand-card").click();
   await page.locator("#create-share").click();
   await expect(page.locator("#routecard-text")).toContainText("Gate");
+});
+
+for (const outcome of ["cancel", "failure"] as const) {
+  test(`expansion recovers after terrain ${outcome}`, async ({ page }) => {
+    let requestRoute: import("@playwright/test").Route | undefined;
+    await page.route("**/terrain/**", (route) => {
+      requestRoute = route;
+    });
+    await page.locator("#create-map").click({ position: { x: 100, y: 100 } });
+    await page.locator("#create-map").click({ position: { x: 180, y: 180 } });
+    await expect(page.locator("#card-expand-hint")).toHaveText(
+      "Expand to Share",
+    );
+    await page.locator("#create-terrain").click();
+    await page.locator("#confirm-create-terrain").click();
+    await expect.poll(() => !!requestRoute).toBe(true);
+    await expect(page.locator("#expand")).toBeDisabled();
+    await expect(page.locator("#expand-card")).toBeDisabled();
+    if (outcome === "cancel") {
+      await page.locator("#cancel-create-terrain").click();
+      await requestRoute!.abort();
+    } else {
+      await requestRoute!.fulfill({ status: 500, body: "Unavailable" });
+    }
+    await expect(page.locator("#dialog")).not.toBeVisible();
+    await expect(page.locator("#expand")).toBeEnabled();
+    await expect(page.locator("#expand-card")).toBeEnabled();
+    await page.locator("#expand-card").click();
+    await expect(page.locator("body")).toHaveClass(/card-expanded/);
+    await expect(page.locator("#card-expand-hint")).not.toBeVisible();
+    await page.locator("#expand-card").click();
+    await page.locator("#expand").click();
+    await expect(page.locator("body")).toHaveClass(/map-expanded/);
+  });
+}
+
+test("double tapping the card heading keeps the phone viewport at its normal scale", async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, "Touch gesture check");
+  await page.locator("#create-card .card-heading h2").scrollIntoViewIfNeeded();
+  const heading = await page
+    .locator("#create-card .card-heading h2")
+    .boundingBox();
+  await page.touchscreen.tap(heading!.x + 20, heading!.y + heading!.height / 2);
+  await page.touchscreen.tap(heading!.x + 20, heading!.y + heading!.height / 2);
+  expect(await page.evaluate(() => window.visualViewport!.scale)).toBe(1);
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth),
+  ).toBeLessThanOrEqual(await page.evaluate(() => innerWidth));
+  // The gesture policy must cover descendants; a viewport zoom lock would also
+  // remove deliberate pinch zoom, so retain manipulation rather than none.
+  expect(
+    await page
+      .locator("body")
+      .evaluate((el) => getComputedStyle(el).touchAction),
+  ).toBe("manipulation");
+  expect(
+    await page.locator('meta[name="viewport"]').getAttribute("content"),
+  ).not.toMatch(/user-scalable=no|maximum-scale=1/);
 });

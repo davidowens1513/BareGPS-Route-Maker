@@ -2,7 +2,7 @@
 
 Draw, shape and share a walking route directly on the map.
 
-**Current version: 0.1.2, build 3.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
+**Current version: 0.1.3, build 7.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
 
 [Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker)
 
@@ -29,7 +29,7 @@ Lines connect points directly; they do not automatically follow paths. Check acc
 
 Route Maker contains drawing and route-card UI only. It has no GPX importer, Input Tracks, simplification module, Route Plan or inbound native-file queue. Its saved workspace holds only the drawing and fetched terrain.
 
-The two products have independent entry points and storage models; there is no product-mode switch. The current main branch includes the standalone source cleanup and published policy links, independent local dependencies and phone targets in 0.1.2 (build 3).
+The two products have independent entry points and storage models; there is no product-mode switch. The current main branch includes the standalone source cleanup and published policy links, independent local dependencies and phone targets in 0.1.3 (build 7).
 
 ## Run and build
 
@@ -103,3 +103,9 @@ Route Maker now has its own physical node_modules folder on the development Mac.
 Native builds target phones: iPhone (device family 1) and Android small/normal screen classes, with common and intermediate densities listed for store filtering. iPad native layouts are not targeted. Tablets, including iPads, use the responsive [web version](https://appsbyonzy.dev/tools/baregps-route-maker/), covered by a tablet browser test alongside phone and desktop tests.
 
 Apple can still offer an iPhone app on iPad in compatibility mode. Android compatible-screen declarations filter store distribution but do not prevent manual APK sideloading; final Play device availability must be reviewed before submission. No artificial hardware requirement has been added.
+
+## Latest fixes - 0.1.3 (build 7)
+
+Map and Route Card expansion controls recover after terrain fetching or GPX saving, including cancellation and failure. A small “Expand to Share” hint appears beside Route Card expansion and hides in the expanded view.
+
+The native iPhone page stays at its normal scale on double taps; map pinch zoom remains available. A native-only viewport policy is applied after Capacitor sets up its content controller, avoiding the iOS double-tap issue that CSS and Capacitor's zoom flag alone did not prevent. The web viewport remains scalable. Native simulator tests reproduce the old enlargement and pass with the correction; a separate pinch test verifies map scale changes without enlarging app controls. The user confirmed the phone screen stays at the right size. Physical automated touch testing could not start and is not reported as passed. These targeted checks do not close the broader native failure, lifecycle or accessibility acceptance work.

@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-11",
+  "version": "0.1.2",
+  "ios_build": 6,
+  "scope": "Native iPhone page zoom only; web viewport remains scalable",
+  "root_cause": "WKWebView double-tap zoom ignores CSS manipulation/Capacitor zoomEnabled=false on affected iOS. Capacitor replaces userContentController after webViewConfiguration; inject viewport policy in webView(with:configuration:) instead.",
+  "fix": "Native WKUserScript at document end sets minimum/maximum scale=1 and user-scalable=no; configuration respects viewport scale limits. Leaflet retains map gestures.",
+  "native_simulator_regressions": {
+    "before": "failed: button width 35 -> 56.035, horizontal position 335 -> 520.335",
+    "after_double_tap": "passed: app control width/position stable",
+    "after_map_pinch": "passed: map scale changes while app control width remains stable"
+  },
+  "physical_iphone": "build 6 installed and launched; version/build verified",
+  "physical_automated_gesture_test": "runner could not enable automation; not claimed as passed",
+  "manual_iphone_confirmation": "user replied that the screen stays the right size; reply referred to build 5 prompt after build 6 was installed",
+  "public_website_and_git": "included in 0.1.3 build 7 publication; see website release evidence"
+}

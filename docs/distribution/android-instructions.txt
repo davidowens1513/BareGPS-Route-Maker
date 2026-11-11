@@ -1,5 +1,5 @@
 BAREGPS ROUTE MAKER - ANDROID
-Version 0.1.2 build 3
+Version 0.1.3 build 7
 
 Install the signed APK as an update, or unzip the Android bundle and open its APK. Keep your GPX originals. No account is required.
 
