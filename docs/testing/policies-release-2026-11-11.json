@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-11",
+  "product": "BareGPS Route Maker",
+  "version": "0.1.1",
+  "build": 2,
+  "unit_tests": 49,
+  "browser_checks": 6,
+  "typescript": "passed",
+  "android_release_build": "passed",
+  "ios_device_build": "passed",
+  "android_install_launch": "passed on Samsung Galaxy A07",
+  "ios_install_launch": "passed on iPhone 14",
+  "about_links_logo": "verified in browser",
+  "privacy_manifest_in_built_app": "verified; no tracking and empty tracking-domain list",
+  "privacy_connect_label": "not published; provider retention/linkage must be confirmed",
+  "pdf": "5 pages; saved on Desktop",
+  "native_acceptance_scope": "install/launch only; broader lifecycle, save/share and iPad acceptance remains"
+}

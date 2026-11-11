@@ -2978,3 +2978,9 @@ body.creating:not(.web-route-card) #create-card #create-save {
   grid-column: 1 / -1;
   width: 100%;
 }
+
+.about-logo {
+  float: right;
+  margin: 0 0 8px 12px;
+  border-radius: 14px;
+}
