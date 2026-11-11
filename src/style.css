@@ -2999,3 +2999,18 @@ body.creating:not(.web-route-card) #create-card #create-save {
 .card-expanded .card-expand-hint {
   display: none;
 }
+
+/* Five equal drawing controls retain the existing 34px height and type size. */
+.create-tools .drawing-modes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  width: 100%;
+}
+.create-tools .drawing-modes button {
+  min-width: 0;
+  height: 34px;
+  min-height: 34px;
+  padding: 2px 4px;
+  line-height: 1.15;
+  white-space: normal;
+}

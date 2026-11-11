@@ -112,6 +112,9 @@ export class TrackMap {
     });
   }
   fit(tracks: Track[]) {
+    // Construction happens while the drawing panel is hidden. Refresh its size
+    // even with no route, so the initial tile grid fills the visible map.
+    this.map.invalidateSize({ pan: false });
     const coords = tracks.flatMap((t) =>
       t.points.map((p) => [p.lat, p.lon] as L.LatLngTuple),
     );
@@ -120,7 +123,6 @@ export class TrackMap {
       if (!this.initialViewPending) this.home();
       return;
     }
-    this.map.invalidateSize({ pan: false });
     this.map.fitBounds(L.latLngBounds(coords).pad(0.15), { maxZoom: 16 });
   }
 }

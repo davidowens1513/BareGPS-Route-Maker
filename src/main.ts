@@ -84,7 +84,7 @@ document.querySelector("#app")!.innerHTML = `
   <section id="map-panel" class="map-panel" aria-label="Track map">
     <div class="map-toolbar"><span class="map-label">${icon("mountain", 18)}<strong>OpenTopoMap</strong><span class="terrain-label">TERRAIN</span></span><div class="map-actions"><button id="fit" class="icon-button" aria-label="Fit tracks to map" title="Fit tracks">${icon("fit", 18)}</button><button id="expand" class="icon-button" aria-label="Expand map" title="Expand map">${icon("expand", 18)}</button></div></div>
     <div id="create-map-view" role="region" aria-label="Route creation map" hidden><div id="create-map" aria-label="Create a walking route"></div><button id="create-locate" class="icon-button map-locate" aria-label="Go to current position" title="Go to current position">${icon("locate", 21)}</button><span id="create-coordinates" class="map-coordinates" aria-label="Map centre coordinates"></span><p class="create-map-hint" id="create-map-hint">Tap the map to place your starting point.</p></div>
-    <div id="create-tools" class="create-tools" role="group" aria-label="Route drawing controls" hidden><div class="drawing-modes" role="group" aria-label="Drawing mode"><button id="draw-add" aria-pressed="true">Add points</button><button id="draw-insert" aria-pressed="false">Insert point</button><button id="create-delete" disabled>Delete point</button><button id="create-close">Close loop</button></div></div>
+    <div id="create-tools" class="create-tools" role="group" aria-label="Route drawing controls" hidden><div class="drawing-modes" role="group" aria-label="Drawing mode"><button id="draw-add" aria-pressed="true">Add points</button><button id="draw-insert" aria-pressed="false">Insert point</button><button id="create-delete" disabled>Delete point</button><button id="create-close">Close loop</button><button id="create-reset">Reset</button></div></div>
     <div id="create-map-error" class="map-error" hidden><span>Some map tiles couldn’t load. Editing still works.</span><div class="map-warning-actions"><button id="retry-create-map" class="text-button">Retry</button><button id="dismiss-create-map" class="icon-button" aria-label="Dismiss map warning">${icon("close", 16)}</button></div></div>
   </section>
   <section id="analytics" class="analytics" aria-label="Live track analytics"><div class="metric"><span>${icon("route", 17)} Distance(km)</span><strong id="distance">0.00</strong></div><div class="metric"><span>${icon("up", 17)} Ascent(m)</span><strong id="ascent">u/a</strong></div><div class="metric"><span>${icon("down", 17)} Descent(m)</span><strong id="descent">u/a</strong></div><div class="metric selection-metric"><span>${icon("pin", 17)} <span id="selection-caption">SELECTED TRACK</span></span><strong id="point-count">No track selected</strong><span id="analytics-source" class="metric-note">Open a file to begin</span></div></section>
@@ -134,9 +134,8 @@ const createMap = new CreateMap(
 createMap.onSelect = (index) => {
   if (busy) return;
   selectedCreatePoint = index;
-  createMap.selectedIndex = index;
-  $<HTMLButtonElement>("create-delete").disabled = false;
-  renderMap();
+  drawingMode = "add";
+  render();
 };
 createMap.map.on("moveend resize", () =>
   updateMapCoordinates("create", createMap),
@@ -665,13 +664,15 @@ function renderCreated() {
     "aria-pressed",
     String(drawingMode === "insert"),
   );
+  if (selectedCreatePoint !== null && !points[selectedCreatePoint])
+    selectedCreatePoint = null;
   $<HTMLButtonElement>("draw-add").disabled = busy;
-  $<HTMLButtonElement>("draw-insert").disabled = busy || points.length < 2;
+  $<HTMLButtonElement>("draw-insert").disabled =
+    busy || points.length < 2 || selectedCreatePoint !== null;
+  $<HTMLButtonElement>("create-reset").disabled = busy || !points.length;
   $<HTMLButtonElement>("create-close").disabled =
     busy || points.length < 3 || closed;
   $("create-close").textContent = "Close loop";
-  if (selectedCreatePoint !== null && !points[selectedCreatePoint])
-    selectedCreatePoint = null;
   $<HTMLButtonElement>("create-delete").disabled =
     busy || selectedCreatePoint === null;
   renderPointCard();
@@ -850,12 +851,13 @@ function applyCreatedColour(color: string) {
 }
 $("draw-add").onclick = () => {
   if (!busy) {
+    selectedCreatePoint = null;
     drawingMode = "add";
     render();
   }
 };
 $("draw-insert").onclick = () => {
-  if (!busy && draft().points.length >= 2) {
+  if (!busy && draft().points.length >= 2 && selectedCreatePoint === null) {
     drawingMode = "insert";
     render();
   }
@@ -889,6 +891,18 @@ $("create-save").onclick = () => {
   const context = routeCardContext();
   if (context && context.route.points.length >= 2)
     void exportTrack(context.terrain ?? context.route);
+};
+$("create-reset").onclick = () => {
+  if (busy || !draft().points.length) return;
+  openDialog(
+    `${dialogHeader("Reset route?", "Remove all points from this route.")}<p>Your route name, colour and saved GPX files stay in place. You can undo this reset.</p><div class="dialog-actions"><button class="button secondary" data-close>Cancel</button><button id="confirm-reset-created" class="button primary">Reset</button></div>`,
+  );
+  $("confirm-reset-created").onclick = () => {
+    selectedCreatePoint = null;
+    drawingMode = "add";
+    changeCreated(() => ({ ...draft(), points: [] }));
+    $<HTMLDialogElement>("dialog").close();
+  };
 };
 $("create-clear").onclick = () => {
   if (busy) return;

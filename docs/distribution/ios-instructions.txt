@@ -1,5 +1,5 @@
 BAREGPS ROUTE MAKER - IOS
-Version 0.1.3 build 7
+Version 0.1.4 build 8
 
 This is an Xcode source bundle, not an installable IPA or TestFlight download. Run npm ci, then npm run native:sync. Open ios/App/App.xcodeproj in Xcode, choose your development team and connected iPhone, and build/run. The bundled web assets are ready. The iOS dependency path is local to this project.
 

@@ -2,7 +2,7 @@
 
 Draw, shape and share a walking route directly on the map.
 
-**Current version: 0.1.3, build 7.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
+**Current version: 0.1.4, build 8.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
 
 [Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker)
 
@@ -109,3 +109,9 @@ Apple can still offer an iPhone app on iPad in compatibility mode. Android compa
 Map and Route Card expansion controls recover after terrain fetching or GPX saving, including cancellation and failure. A small “Expand to Share” hint appears beside Route Card expansion and hides in the expanded view.
 
 The native iPhone page stays at its normal scale on double taps; map pinch zoom remains available. A native-only viewport policy is applied after Capacitor sets up its content controller, avoiding the iOS double-tap issue that CSS and Capacitor's zoom flag alone did not prevent. The web viewport remains scalable. Native simulator tests reproduce the old enlargement and pass with the correction; a separate pinch test verifies map scale changes without enlarging app controls. The user confirmed the phone screen stays at the right size. Physical automated touch testing could not start and is not reported as passed. These targeted checks do not close the broader native failure, lifecycle or accessibility acceptance work.
+
+## Latest controls and startup fix - 0.1.4 (build 8)
+
+The map has five equal-width controls: Add points, Insert point, Delete point, Close loop and Reset. The existing 34-pixel button height and phone/desktop font sizes are retained; labels wrap onto two lines where needed. Reset asks for confirmation, removes all points while retaining route name/colour and saved exports, and supports Undo. Insert point is disabled while a waypoint is selected. Add points clears that selection.
+
+On a fresh workspace, the map was constructed while hidden and skipped its size refresh because there were no route points. This could leave only a clipped tile visible until Home/location or another resize. Map fitting now refreshes its size even for an empty route. The fresh-start browser check verifies tiles cover all four map corners before any user interaction. Checks passed at phone, tablet and desktop sizes; the controls also fit 320-pixel phones without reducing type or increasing height.

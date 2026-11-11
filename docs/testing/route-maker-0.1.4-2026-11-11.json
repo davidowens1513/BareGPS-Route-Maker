@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-11",
+  "version": "0.1.4",
+  "build": 8,
+  "changes": [
+    "five equal 34px map controls with unchanged font size",
+    "confirmed undoable Reset preserving name/colour",
+    "Insert disabled for selected point; Add points clears selection",
+    "initial empty-map size invalidated before fitting"
+  ],
+  "map_cause": "Map constructed while panel hidden; empty geometry returned before invalidateSize, leaving only one clipped tile. Native startup symptom matched user report; no provider change needed.",
+  "map_observation_before": "one loaded tile on initial 390px view",
+  "map_observation_after": "six loaded tiles covering initial 390px view",
+  "tests": {
+    "unit": 49,
+    "browser_passed": 23,
+    "desktop_touch_check": "intentionally skipped",
+    "small_control_widths": [
+      320,
+      390
+    ]
+  },
+  "android_release_build": "passed; permanent release signing verified",
+  "ios_device_build": "passed",
+  "phone_installation": {
+    "android": "0.1.4 (8), install and launch passed",
+    "iphone": "0.1.4 (8), install and launch passed; version verified"
+  },
+  "fresh_install_on_physical_phone": "not performed; existing workspace preserved",
+  "publication_order": "both phone installs completed before website build and Git publication"
+}

@@ -165,3 +165,86 @@ test("double tapping the card heading keeps the phone viewport at its normal sca
     await page.locator('meta[name="viewport"]').getAttribute("content"),
   ).not.toMatch(/user-scalable=no|maximum-scale=1/);
 });
+
+test("five equal map controls confirm Reset and disable Insert for a selected point", async ({
+  page,
+}) => {
+  const controls = page.locator(".drawing-modes button");
+  await expect(controls).toHaveCount(5);
+  const sizes = await controls.evaluateAll((elements) =>
+    elements.map((el) => ({
+      width: el.getBoundingClientRect().width,
+      height: el.getBoundingClientRect().height,
+      font: parseFloat(getComputedStyle(el).fontSize),
+      fits:
+        el.scrollWidth <= el.clientWidth && el.scrollHeight <= el.clientHeight,
+    })),
+  );
+  expect(
+    Math.max(...sizes.map((s) => s.width)) -
+      Math.min(...sizes.map((s) => s.width)),
+  ).toBeLessThan(1);
+  for (const size of sizes) {
+    expect(size.height).toBe(34);
+    expect(size.font).toBeGreaterThanOrEqual(11);
+    expect(size.fits).toBe(true);
+  }
+  await expect(page.locator("#create-reset")).toBeDisabled();
+  await page.locator("#create-map").click({ position: { x: 100, y: 100 } });
+  await page.locator("#create-map").click({ position: { x: 180, y: 180 } });
+  await expect(page.locator("#draw-insert")).toBeEnabled();
+  await page.locator("#dismiss-create-map").click();
+  await page.locator('.track-handle[title^="Route point 1"]').click();
+  await expect(page.locator("#draw-insert")).toBeDisabled();
+  await expect(page.locator("#create-delete")).toBeEnabled();
+  await page.locator("#draw-add").click();
+  await expect(page.locator("#draw-insert")).toBeEnabled();
+  await expect(page.locator("#create-delete")).toBeDisabled();
+  await page.locator("#create-name").fill("My route");
+  await page.locator("#create-name").blur();
+  await page.locator("#create-reset").click();
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(page.locator("#waypoint-count")).toHaveText("2");
+  await page.locator("#create-reset").click();
+  await page.locator("#confirm-reset-created").click();
+  await expect(page.locator("#waypoint-count")).toHaveText("0");
+  await expect(page.locator("#create-name")).toHaveValue("My route");
+  await page.locator("#undo").click();
+  await expect(page.locator("#waypoint-count")).toHaveText("2");
+});
+
+test("an empty route loads tiles across the whole map on first opening", async ({
+  page,
+}) => {
+  const png = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aP2kAAAAASUVORK5CYII=",
+    "base64",
+  );
+  await page.route("**/*.tile.opentopomap.org/**", (route) =>
+    route.fulfill({ contentType: "image/png", body: png }),
+  );
+  await page.reload();
+  await expect(page.locator("#waypoint-count")).toHaveText("0");
+  await expect
+    .poll(() =>
+      page.locator("#create-map").evaluate((el) => {
+        const map = el.getBoundingClientRect();
+        const tiles = Array.from(
+          el.querySelectorAll<HTMLImageElement>(".leaflet-tile-loaded"),
+        )
+          .filter((i) => i.naturalWidth > 0)
+          .map((i) => i.getBoundingClientRect());
+        return [
+          [map.left + 1, map.top + 1],
+          [map.right - 1, map.top + 1],
+          [map.left + 1, map.bottom - 1],
+          [map.right - 1, map.bottom - 1],
+        ].every(([x, y]) =>
+          tiles.some(
+            (t) => t.left <= x && t.right >= x && t.top <= y && t.bottom >= y,
+          ),
+        );
+      }),
+    )
+    .toBe(true);
+});
