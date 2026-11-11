@@ -24,15 +24,20 @@ export interface Workspace {
 }
 export const MAX_POINTS = 5000;
 export const COLORS = [
-  "#d32f2f",
-  "#2563eb",
-  "#ec4899",
-  "#16724d",
-  "#d78332",
-  "#5b69b0",
-  "#c35d68",
-  "#278aa2",
-  "#8b674a",
+  { name: "Red", color: "#ff0000" },
+  { name: "Green", color: "#16724d" },
+  { name: "Yellow", color: "#ffff00" },
+  { name: "Blue", color: "#0000ff" },
+  { name: "White", color: "#ffffff" },
+  { name: "Black", color: "#000000" },
+  { name: "Grey", color: "#808080" },
+  { name: "Orange", color: "#ff8000" },
+  { name: "Lime", color: "#80c000" },
+  { name: "Turquoise", color: "#00a6a6" },
+  { name: "Sky blue", color: "#00bfff" },
+  { name: "Pink", color: "#ff69b4" },
+  { name: "Purple", color: "#800080" },
+  { name: "Brown", color: "#8b4513" },
 ];
 export const uid = () => crypto.randomUUID();
 export const emptyWorkspace = (): Workspace => ({ version: 1 });
@@ -112,7 +117,7 @@ export function validateWorkspace(value: unknown): value is Workspace {
   const w = value as Workspace;
   if (w.version !== 1) return false;
   return [
-    [w.created, 1000, 0],
+    [w.created, Number.POSITIVE_INFINITY, 0],
     [w.createdTerrain, MAX_POINTS, 2],
   ].every(([value, max, min]) => {
     if (value === undefined) return true;

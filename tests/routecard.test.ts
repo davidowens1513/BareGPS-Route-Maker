@@ -51,80 +51,50 @@ it("sums terrain climbs within each leg and carries cumulative ascent", () => {
   expect(missing[2].totalAscent).toBeUndefined();
 });
 
-it("summarises to 30 original checkpoints and aggregates the full winding route", () => {
+it("keeps every original point and full totals in large cards and shared text", () => {
   const route = {
     ...newCreatedRoute(),
-    points: Array.from({ length: 200 }, (_, i) => ({
+    points: Array.from({ length: 6001 }, (_, i) => ({
       lat: 53 + i * 0.00001,
-      lon: -6 + (i % 2) * 0.001,
+      lon: -6,
       ele: i % 2 ? 150 : 100,
       ...(i === 47 ? { name: "Gate" } : {}),
     })),
   };
   const before = structuredClone(route);
-  const full = routecardRows(route, undefined, true);
-  const summary = routecardRows(route);
-  expect(summary).toHaveLength(30);
-  expect(summary[0].index).toBe(0);
-  expect(summary.at(-1)!.index).toBe(199);
-  expect(summary.some((r) => r.index === 47)).toBe(true);
-  expect(new Set(summary.map((r) => r.index)).size).toBe(30);
-  expect(summary.at(-1)!.total).toBeCloseTo(full.at(-1)!.total);
-  expect(summary.reduce((n, r) => n + r.distance, 0)).toBeCloseTo(
-    full.at(-1)!.total,
-  );
-  expect(summary.reduce((n, r) => n + r.ascent!, 0)).toBe(
-    full.at(-1)!.totalAscent,
-  );
-  for (let n = 1; n < summary.length; n++) {
-    const previous = summary[n - 1].index,
-      current = summary[n].index;
-    expect(summary[n].ascent).toBe(
-      full
-        .slice(previous + 1, current + 1)
-        .reduce((sum, r) => sum + r.ascent!, 0),
-    );
-  }
-  expect(route).toEqual(before);
-  const text = routecardText(route, "latlon");
-  expect(text).toContain("30 checkpoints from 200 route points");
-  expect(text).toContain("Point 48 · Gate");
-  expect(text.match(/^Point /gm)).toHaveLength(30);
-  expect(text).toContain("Point 200 · End");
-  expect(
-    routecardText(route, "latlon", undefined, 0, true).match(/^Point /gm),
-  ).toHaveLength(200);
-});
-
-it("keeps every named point even when names take the summary above 30", () => {
-  const route = {
-    ...newCreatedRoute(),
-    points: Array.from({ length: 70 }, (_, i) => ({
-      lat: 53,
-      lon: -6,
-      ...(i % 2 ? { name: `P${i}` } : {}),
-    })),
-  };
   const rows = routecardRows(route);
-  expect(rows.length).toBeGreaterThan(30);
-  expect(rows.filter((r) => r.point.name)).toHaveLength(35);
-  expect(rows[0].index).toBe(0);
-  expect(rows.at(-1)!.index).toBe(69);
+  expect(rows).toHaveLength(6001);
+  expect(rows.map((r) => r.index)).toEqual(route.points.map((_, i) => i));
+  expect(rows[47].point.name).toBe("Gate");
+  expect(rows.reduce((sum, r) => sum + r.distance, 0)).toBeCloseTo(
+    rows.at(-1)!.total,
+  );
+  expect(rows.reduce((sum, r) => sum + r.ascent!, 0)).toBe(
+    rows.at(-1)!.totalAscent,
+  );
+  const text = routecardText(route, "latlon");
+  expect(text).toContain("6001 route points");
+  expect(text.match(/^Point /gm)).toHaveLength(6001);
+  expect(text).toContain("Point 48 · Gate");
+  expect(text).toContain("Point 6001 · End");
+  expect(route).toEqual(before);
 });
 
-it("handles coincident points and preserves missing ascent across omitted rows", () => {
+it("retains coincident and unnamed points and missing ascent on every row", () => {
   const route = {
     ...newCreatedRoute(),
     points: Array.from({ length: 100 }, (_, i) => ({
       lat: 53,
       lon: -6,
       ...(i !== 51 ? { ele: 100 } : {}),
+      ...(i % 2 ? { name: `P${i}` } : {}),
     })),
   };
   const rows = routecardRows(route);
-  expect(rows).toHaveLength(30);
-  expect(rows.at(-1)!.total).toBe(0);
-  expect(rows.some((r) => r.ascent === undefined)).toBe(true);
+  expect(rows).toHaveLength(100);
+  expect(rows.filter((r) => r.point.name)).toHaveLength(50);
+  expect(rows[51].ascent).toBeUndefined();
   expect(rows.at(-1)!.totalAscent).toBeUndefined();
+  expect(rows.at(-1)!.total).toBe(0);
   expect(routecardRows({ ...route, points: [] })).toEqual([]);
 });

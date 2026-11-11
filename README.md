@@ -1,8 +1,8 @@
 # BareGPS Route Maker
 
-Draw, shape and share a walking route directly on the map.
+Draw, shape and share a hiking route directly on the map.
 
-**Current version: 0.1.4, build 8.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
+**Current version: 0.1.5, build 11.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
 
 [Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker)
 
@@ -11,13 +11,13 @@ Draw, shape and share a walking route directly on the map.
 - Draw a route by tapping the map; insert, move or delete waypoints and close loops.
 - Choose a route name, line colour and regional coordinate system.
 - Fetch terrain estimates and show distance, ascent, descent and an elevation profile.
-- Save the full route as GPX; share summary or full Route Cards as text/PDF.
+- Save the full route as GPX; share every Route Card point as text or portrait PDF.
 - Keep a local drawing with Undo/Redo. Save Route spans the full row on iOS/Android.
-- Up to 1,000 drawing waypoints, within the separate terrain sampling limit.
+- Draw without an application-imposed waypoint cap; terrain requests retain their separate sampling limit.
 
 ## Terrain and Route Cards
 
-Route Cards default to 30 checkpoints, retaining start, finish and every named point. More than 30 names can exceed the target. Full Card shows all points. Text/PDF sharing follows the chosen view; distances and ascent use the full route geometry, and GPX retains every route point.
+Route Cards contain every drawn route point; the Point Naming preference controls whether a name column appears. Expanded cards support sharing as text or PDF, both with all points. Distances and ascent use the full route geometry, and GPX retains every route point.
 
 Terrain uses Open Topo Data's Mapzen dataset, roughly 90-metre sampling and a 5,000-point job limit including added samples. Primary elevation totals show **u/a** while missing, incomplete or invalidated. Heights are unsmoothed estimates; noise can inflate ascent.
 
@@ -29,7 +29,7 @@ Lines connect points directly; they do not automatically follow paths. Check acc
 
 Route Maker contains drawing and route-card UI only. It has no GPX importer, Input Tracks, simplification module, Route Plan or inbound native-file queue. Its saved workspace holds only the drawing and fetched terrain.
 
-The two products have independent entry points and storage models; there is no product-mode switch. The current main branch includes the standalone source cleanup and published policy links, independent local dependencies and phone targets in 0.1.3 (build 7).
+The two products have independent entry points and storage models; there is no product-mode switch. The current main branch includes independent dependencies, phone targets, published policy links and the refinements below.
 
 ## Run and build
 
@@ -51,7 +51,7 @@ npm run ios
 npm run android
 ```
 
-Native smoke fixtures cover iOS launch and Android identity. Broader physical-device save/share, lifecycle and failure acceptance remains a release gate. Source cleanup verification is recorded separately from the published release evidence in `docs/testing/`.
+Native smoke fixtures cover iOS launch, Android identity and Android system-bar/keyboard insets. The inset check passed on the connected Samsung Galaxy A07. Broader physical-device save/share, lifecycle and failure acceptance remains a release gate. Source cleanup verification is recorded separately from the published release evidence in `docs/testing/`.
 
 ## Android signing and installation
 
@@ -112,6 +112,18 @@ The native iPhone page stays at its normal scale on double taps; map pinch zoom 
 
 ## Latest controls and startup fix - 0.1.4 (build 8)
 
-The map has five equal-width controls: Add points, Insert point, Delete point, Close loop and Reset. The existing 34-pixel button height and phone/desktop font sizes are retained; labels wrap onto two lines where needed. Reset asks for confirmation, removes all points while retaining route name/colour and saved exports, and supports Undo. Insert point is disabled while a waypoint is selected. Add points clears that selection.
+The map has five equal-width controls: Add points, Insert point, Delete point, Close loop and Reset. The existing 34-pixel button height and phone/desktop font sizes are retained; labels wrap onto two lines where needed. Reset asks for confirmation, removes all points and restores the default route name while retaining colour and saved exports, and supports Undo. Insert point is disabled while a waypoint is selected. Add points clears that selection.
 
 On a fresh workspace, the map was constructed while hidden and skipped its size refresh because there were no route points. This could leave only a clipped tile visible until Home/location or another resize. Map fitting now refreshes its size even for an empty route. The fresh-start browser check verifies tiles cover all four map corners before any user interaction. Checks passed at phone, tablet and desktop sizes; the controls also fit 320-pixel phones without reducing type or increasing height.
+
+
+## Latest refinements — 0.1.5 (build 11)
+
+- Android content and expanded views respect system bars, screen cutouts and the keyboard. The bottom safe area was verified on a physical Samsung Galaxy A07.
+- Fit is disabled until a route has points; initial empty-map sizing still refreshes correctly.
+- Reset and Clear restore the default “Created Route” name. Undo restores the previous route and name.
+- Route Cards include every point. Shared PDFs are portrait A4, show the name column only when Point Naming is enabled, and give all four distance/ascent columns equal widths. Text and PDF share the same closing wording.
+- Settings keeps its title, close control and Done visible while options scroll, with a separator above Done. Colours use two centred rows of seven choices plus hex entry. Apply colour enables only for a valid change and disables after applying.
+- About keeps its heading and controls visible while the text scrolls. It includes the revised route-making bullets, plain-English terrain and Route Card explanations, accurate provider names and expandable third-party copyright/licence notices. The footer and drawing-point cap have been removed; terrain sampling retains its separate limit.
+
+Validation: 49 unit tests and 44 browser checks passed across phone, tablet and desktop layouts (one desktop touch-only check intentionally skipped). Android release and iPhone device builds passed. Both phones received and launched the latest functional changes before this publication; public build 11 adds release version metadata. These checks do not close the broader Store acceptance work described above.

@@ -5,5 +5,11 @@ const config: CapacitorConfig = {
   webDir: "dist",
   ios: { contentInset: "never" },
   android: { backgroundColor: "#f5f6f2" },
+  plugins: {
+    SystemBars: {
+      // Android MainActivity reserves system bars and keyboard space natively.
+      insetsHandling: "disable",
+    },
+  },
 };
 export default config;

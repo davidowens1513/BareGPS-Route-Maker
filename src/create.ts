@@ -1,10 +1,11 @@
 import { type Track, type Point, uid, distance } from "./model";
 
-export const MAX_WAYPOINTS = 1000;
+export const DEFAULT_ROUTE_NAME = "Created Route";
+
 export function newCreatedRoute(): Track {
   return {
     id: uid(),
-    name: "Created Route",
+    name: DEFAULT_ROUTE_NAME,
     color: "#16724d",
     kind: "route",
     source: "Created in BareGPS",
@@ -28,10 +29,6 @@ export function insertWaypoint(
   validPoint(point);
   if (!Number.isInteger(index) || index < 0 || index > route.points.length)
     throw new Error("That route segment has changed. Try again.");
-  if (route.points.length >= MAX_WAYPOINTS)
-    throw new Error(
-      "This route has 1,000 waypoints. Save it and start a new route.",
-    );
   if (
     [route.points[index - 1], route.points[index]].some(
       (p) => p && distance(p, point) < 0.5,

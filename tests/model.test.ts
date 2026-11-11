@@ -28,16 +28,16 @@ it("validates and restores drawings without retaining Editor state", () => {
   expect(restored.created).not.toBe(saved.created);
   expect(saved.tracks).toHaveLength(1);
 });
-it("rejects invalid or oversized drawing and terrain data", () => {
+it("accepts large drawings while rejecting invalid points and oversized terrain jobs", () => {
   const created = newCreatedRoute();
   expect(validateWorkspace(emptyWorkspace())).toBe(true);
   expect(validateWorkspace({ version: 2 })).toBe(false);
   expect(
     validateWorkspace({
       version: 1,
-      created: { ...created, points: Array(1001).fill({ lat: 53, lon: -6 }) },
+      created: { ...created, points: Array(6001).fill({ lat: 53, lon: -6 }) },
     }),
-  ).toBe(false);
+  ).toBe(true);
   expect(
     validateWorkspace({
       version: 1,

@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-11",
+  "local_build": 10,
+  "android_native_safe_area": {
+    "native_content_padding": "system bars and cutouts; max(navigation bottom, keyboard bottom)",
+    "forwarded_insets": "handled dimensions zeroed; updates still dispatched",
+    "device_test": "passed on connected Samsung Galaxy A07",
+    "physical_window_height": 1600,
+    "physical_navigation_height": 90,
+    "webview_visible_bounds": [
+      0,
+      64,
+      720,
+      1510
+    ],
+    "expanded_card_and_map_controls": "within native viewport"
+  },
+  "browser_checks_passed": 38,
+  "fit_empty_route": "disabled; handler no-op; startup still refreshes map size",
+  "apply_colour": "disabled for unchanged/invalid colour and after applying",
+  "wording": [
+    "Hiking Route Creator",
+    "Note that OpenTopoMap",
+    "Terrain paragraph 1 ends after Mapzen dataset"
+  ],
+  "git_website": "held by user"
+}

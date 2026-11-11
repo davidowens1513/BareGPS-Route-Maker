@@ -1,4 +1,22 @@
 :root {
+  /* Android SystemBars supplies CSS values; iOS/web use viewport env values.
+     Use one source rather than adding both and doubling the safe area. */
+  --app-safe-area-top: var(
+    --safe-area-inset-top,
+    env(safe-area-inset-top, 0px)
+  );
+  --app-safe-area-right: var(
+    --safe-area-inset-right,
+    env(safe-area-inset-right, 0px)
+  );
+  --app-safe-area-bottom: var(
+    --safe-area-inset-bottom,
+    env(safe-area-inset-bottom, 0px)
+  );
+  --app-safe-area-left: var(
+    --safe-area-inset-left,
+    env(safe-area-inset-left, 0px)
+  );
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #263e33;
   background: #f5f6f2;
@@ -63,9 +81,9 @@ button svg {
   display: none !important;
 }
 .app-header {
-  height: calc(var(--header-height) + env(safe-area-inset-top));
-  padding: env(safe-area-inset-top) max(30px, env(safe-area-inset-right)) 0
-    max(30px, env(safe-area-inset-left));
+  height: calc(var(--header-height) + var(--app-safe-area-top));
+  padding: var(--app-safe-area-top) max(30px, var(--app-safe-area-right)) 0
+    max(30px, var(--app-safe-area-left));
   position: sticky;
   top: 0;
   z-index: 1100;
@@ -456,7 +474,7 @@ h3 {
   margin: 16px 0 0;
   padding: 17px 0;
   position: sticky;
-  top: calc(var(--header-height) + env(safe-area-inset-top));
+  top: calc(var(--header-height) + var(--app-safe-area-top));
   z-index: 700;
   box-shadow: 0 2px 8px #283a2503;
 }
@@ -896,7 +914,7 @@ footer > span:first-child {
 }
 .notice {
   position: fixed;
-  bottom: max(22px, env(safe-area-inset-bottom));
+  bottom: max(22px, var(--app-safe-area-bottom));
   left: 50%;
   transform: translateX(-50%);
   z-index: 3000;
@@ -1038,10 +1056,10 @@ dialog p {
 }
 .map-expanded .map-panel {
   position: fixed;
-  top: calc(var(--header-height) + env(safe-area-inset-top));
+  top: calc(var(--header-height) + var(--app-safe-area-top));
   left: 0;
   right: 0;
-  bottom: calc(var(--analytics-height) + env(safe-area-inset-bottom));
+  bottom: calc(var(--analytics-height) + var(--app-safe-area-bottom));
   z-index: 1000;
   border: 0;
   border-radius: 0;
@@ -1055,8 +1073,8 @@ dialog p {
   z-index: 1100;
   border-radius: 0;
   margin: 0;
-  height: calc(var(--analytics-height) + env(safe-area-inset-bottom));
-  padding-bottom: calc(17px + env(safe-area-inset-bottom));
+  height: calc(var(--analytics-height) + var(--app-safe-area-bottom));
+  padding-bottom: calc(17px + var(--app-safe-area-bottom));
 }
 .map-expanded .map-legend {
   bottom: 25px;
@@ -1115,8 +1133,8 @@ dialog p {
     --analytics-height: 91px;
   }
   .app-header {
-    padding-left: max(16px, env(safe-area-inset-left));
-    padding-right: max(12px, env(safe-area-inset-right));
+    padding-left: max(16px, var(--app-safe-area-left));
+    padding-right: max(12px, var(--app-safe-area-right));
   }
   .brand {
     gap: 9px;
@@ -1391,7 +1409,7 @@ dialog p {
   .notice {
     font-size: 11px;
     padding: 9px 9px 9px 13px;
-    bottom: max(14px, env(safe-area-inset-bottom));
+    bottom: max(14px, var(--app-safe-area-bottom));
     width: calc(100vw - 28px);
     max-width: 450px;
   }
@@ -1522,27 +1540,18 @@ dialog p {
   outline: 2px solid var(--green);
   outline-offset: 3px;
 }
-#colour-spectrum {
-  width: 100%;
-  height: 190px;
-  margin: 4px 0 18px;
-}
-#colour-spectrum::part(saturation) {
-  border-radius: 10px 10px 0 0;
-}
-#colour-spectrum::part(hue) {
-  height: 20px;
-  border-radius: 0 0 10px 10px;
-}
 .colour-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px 6px;
+  width: 100%;
+  margin: 6px auto 20px;
 }
 .colour-preset {
-  width: 28px;
-  height: 28px;
+  width: 100%;
+  max-width: 36px;
+  aspect-ratio: 1;
+  justify-self: center;
   border: 2px solid white;
   outline: 1px solid var(--border);
   border-radius: 50%;
@@ -2069,13 +2078,13 @@ dialog p {
 }
 .card-expanded #create-card {
   position: fixed;
-  inset: calc(var(--header-height) + env(safe-area-inset-top)) 0 0;
+  inset: calc(var(--header-height) + var(--app-safe-area-top)) 0 0;
   z-index: 1090;
   margin: 0;
   border-radius: 0;
   display: flex;
   flex-direction: column;
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: var(--app-safe-area-bottom);
 }
 .card-expanded #create-card .card-heading {
   flex-shrink: 0;
@@ -2381,7 +2390,7 @@ body:not(.card-expanded) #create-card .point-name,
 }
 
 .card-expanded .notice {
-  bottom: calc(76px + env(safe-area-inset-bottom));
+  bottom: calc(76px + var(--app-safe-area-bottom));
 }
 
 #create-card .waypoint-scroll {
@@ -2392,7 +2401,7 @@ body:not(.card-expanded) #create-card .waypoint-scroll {
   max-height: var(--compact-card-height, 350px);
 }
 .card-expanded #create-card {
-  max-height: calc(100dvh - var(--header-height) - env(safe-area-inset-top));
+  max-height: calc(100dvh - var(--header-height) - var(--app-safe-area-top));
   overflow: hidden;
 }
 .card-expanded #create-card > .create-settings,
@@ -2928,14 +2937,6 @@ body.creating:not(.card-expanded) #create-card .create-buttons {
 #create-card .card-heading h2 {
   flex: 1;
 }
-#card-detail-toggle {
-  flex-shrink: 0;
-}
-#card-summary-note {
-  padding: 0 14px;
-  font-size: 11px;
-  line-height: 1.4;
-}
 
 #simplify-map {
   height: 240px;
@@ -2982,12 +2983,6 @@ body.creating:not(.web-route-card) #create-card #create-save {
   width: 100%;
 }
 
-.about-logo {
-  float: right;
-  margin: 0 0 8px 12px;
-  border-radius: 14px;
-}
-
 /* Keep the sharing hint beside the Route Card expansion control. */
 .card-expand-hint {
   margin-left: 8px;
@@ -3013,4 +3008,75 @@ body.creating:not(.web-route-card) #create-card #create-save {
   padding: 2px 4px;
   line-height: 1.15;
   white-space: normal;
+}
+
+/* Keep the final action row scrollable clear of Android navigation controls. */
+main {
+  padding-bottom: calc(16px + var(--app-safe-area-bottom));
+}
+dialog {
+  max-height: calc(
+    100dvh - 32px - 2 *
+      max(var(--app-safe-area-top), var(--app-safe-area-bottom))
+  );
+}
+
+/* Long dialogs keep their title/close control and actions outside the scrolling body. */
+dialog.about-dialog,
+dialog.settings-dialog {
+  --scrolling-dialog-height: calc(
+    100dvh - 32px - 2 *
+      max(var(--app-safe-area-top), var(--app-safe-area-bottom))
+  );
+  max-height: var(--scrolling-dialog-height);
+  overflow: hidden;
+  padding: 0;
+}
+.about-dialog #dialog-content,
+.settings-dialog #dialog-content {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(var(--scrolling-dialog-height) - 2px);
+  min-height: 0;
+}
+.about-dialog .dialog-heading,
+.settings-dialog .dialog-heading {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 20px 23px 14px;
+  border-bottom: 1px solid var(--divider);
+  background: white;
+}
+.about-dialog .about-guide,
+.settings-dialog .settings-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 23px 6px;
+}
+.about-dialog-actions,
+.settings-dialog-actions {
+  flex: 0 0 auto;
+  padding: 12px 23px 18px;
+  background: white;
+  border-top: 1px solid var(--divider);
+}
+.about-section-content p > svg {
+  margin-inline: 2px;
+}
+
+.about-notices {
+  margin-bottom: 20px;
+}
+
+.about-notices pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.settings-dialog-actions {
+  border-top: 2px solid var(--divider);
 }

@@ -4,7 +4,6 @@ import {
   insertWaypoint,
   moveWaypoint,
   removeWaypoint,
-  MAX_WAYPOINTS,
 } from "../src/create";
 import {
   analytics,
@@ -43,7 +42,7 @@ describe("created walking routes", () => {
     expect(removeWaypoint(removeWaypoint(moved, 0), 0).points).toEqual([]);
     expect(analytics(moved.points).missingEdges).toBe(1);
   });
-  it("rejects invalid coordinates, obsolete indices, duplicates and excessive point counts", () => {
+  it("rejects invalid coordinates, obsolete indices and duplicate neighbours", () => {
     const r = route();
     expect(() => insertWaypoint(r, 1, { lat: NaN, lon: 0 })).toThrow(
       "supported area",
@@ -55,8 +54,6 @@ describe("created walking routes", () => {
     expect(() => moveWaypoint(r, 9, mid)).toThrow("no longer exists");
     expect(() => insertWaypoint(r, 1, a)).toThrow("too close");
     expect(() => moveWaypoint(r, 1, a)).toThrow("space");
-    r.points = Array.from({ length: MAX_WAYPOINTS }, () => a);
-    expect(() => insertWaypoint(r, 0, b)).toThrow("1,000");
   });
   it("restores old workspaces plus empty, one-point and complete creation drafts", () => {
     const w = emptyWorkspace();
@@ -146,13 +143,11 @@ describe("circular route drawing", () => {
     expect(closed.points.at(-1)).toEqual(a);
     expect(closed.points.every((p) => p.ele === undefined)).toBe(true);
   });
-  it("rejects too few points and obeys the waypoint limit when closing", () => {
+  it("rejects too few points and closes routes beyond the former waypoint limit", () => {
     expect(() => closeRoute(route())).toThrow("at least three");
     const r = triangle();
-    r.points = Array.from({ length: MAX_WAYPOINTS }, (_, i) =>
-      i === 0 ? a : b,
-    );
-    expect(() => closeRoute(r)).toThrow("1,000");
+    r.points = Array.from({ length: 6000 }, (_, i) => (i === 0 ? a : b));
+    expect(closeRoute(r).points).toHaveLength(6001);
   });
 });
 
@@ -197,3 +192,21 @@ function readExport(xml: string, _filename: string) {
     },
   ];
 }
+
+it("adds, restores and exports more than 5,000 drawn points without truncation", () => {
+  const original = {
+    ...newCreatedRoute(),
+    points: Array.from({ length: 6000 }, (_, i) => ({
+      lat: 53 + i * 0.00001,
+      lon: -6,
+    })),
+  };
+  const extended = insertWaypoint(original, original.points.length, {
+    lat: 53.07,
+    lon: -6,
+  });
+  expect(extended.points).toHaveLength(6001);
+  const workspace = { ...emptyWorkspace(), created: extended };
+  expect(validateWorkspace(JSON.parse(JSON.stringify(workspace)))).toBe(true);
+  expect(exportGPX(extended).match(/<trkpt /g)).toHaveLength(6001);
+});

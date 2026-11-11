@@ -14,9 +14,7 @@ import {
 import { saveTrack, shareRoutecard, sharePDF, isCancelled } from "./files";
 import { TrackMap, CreateMap } from "./map";
 import { icon } from "./icons";
-import { routecardText, routecardRows, SUMMARY_CARD_POINTS } from "./routecard";
-import "vanilla-colorful/hex-color-picker.js";
-import type { HexColorPicker } from "vanilla-colorful/hex-color-picker.js";
+import { routecardText, routecardRows } from "./routecard";
 import { enrichTerrain } from "./terrain";
 import { getDevicePosition, locationError } from "./location";
 let locating = false;
@@ -55,6 +53,7 @@ let terrainController: AbortController | null = null;
 const dismissedTileWarning = { create: false, edit: false };
 import {
   newCreatedRoute,
+  DEFAULT_ROUTE_NAME,
   insertWaypoint,
   moveWaypoint,
   removeWaypoint,
@@ -78,7 +77,7 @@ const STORAGE_KEY = "baregps-route-maker-workspace-v1";
 const CONNECTION_ELEVATION_NOTE =
   "Connection distance is included. Connection ascent uses endpoint heights until you fetch terrain; intermediate hills may be missed.";
 document.querySelector("#app")!.innerHTML = `
-<header class="app-header"><a class="brand" href="#" aria-label="BareGPS Route Maker home"><img src="${import.meta.env.BASE_URL}logo.svg" alt="" width="40" height="40"><span class="brand-copy"><strong class="brand-title">BareGPS Route Maker</strong><span class="brand-subtitle">Walking Route Creator</span></span></a><div class="header-right"><div class="device-status"><span id="save-state" class="save-state" role="status" title="Your workspace is kept on this device. Use Save Route to export a GPX file."><span class="save-full">On your device</span><span class="save-short" aria-hidden="true">On device</span></span><div class="history" role="group" aria-label="Edit history"><button id="undo" class="icon-button" aria-label="Undo" title="Undo (⌘/Ctrl Z)">${icon("undo", 18)}</button><button id="redo" class="icon-button" aria-label="Redo" title="Redo (⌘/Ctrl Shift Z)">${icon("redo", 18)}</button></div></div><div class="header-utilities"><button id="help" class="icon-button" aria-label="About and keyboard shortcuts">${icon("help")}</button><button id="settings" class="icon-button" aria-label="Settings" title="Settings">${icon("settings", 19)}</button></div></div></header>
+<header class="app-header"><a class="brand" href="#" aria-label="BareGPS Route Maker home"><img src="${import.meta.env.BASE_URL}logo.svg" alt="" width="40" height="40"><span class="brand-copy"><strong class="brand-title">BareGPS Route Maker</strong><span class="brand-subtitle">Hiking Route Creator</span></span></a><div class="header-right"><div class="device-status"><span id="save-state" class="save-state" role="status" title="Your workspace is kept on this device. Use Save Route to export a GPX file."><span class="save-full">On your device</span><span class="save-short" aria-hidden="true">On device</span></span><div class="history" role="group" aria-label="Edit history"><button id="undo" class="icon-button" aria-label="Undo" title="Undo (⌘/Ctrl Z)">${icon("undo", 18)}</button><button id="redo" class="icon-button" aria-label="Redo" title="Redo (⌘/Ctrl Shift Z)">${icon("redo", 18)}</button></div></div><div class="header-utilities"><button id="help" class="icon-button" aria-label="About">${icon("help")}</button><button id="settings" class="icon-button" aria-label="Settings" title="Settings">${icon("settings", 19)}</button></div></div></header>
 <main>
   <span id="track-count" class="sr-only">Your workspace</span>
   <section id="map-panel" class="map-panel" aria-label="Track map">
@@ -90,14 +89,12 @@ document.querySelector("#app")!.innerHTML = `
   <section id="analytics" class="analytics" aria-label="Live track analytics"><div class="metric"><span>${icon("route", 17)} Distance(km)</span><strong id="distance">0.00</strong></div><div class="metric"><span>${icon("up", 17)} Ascent(m)</span><strong id="ascent">u/a</strong></div><div class="metric"><span>${icon("down", 17)} Descent(m)</span><strong id="descent">u/a</strong></div><div class="metric selection-metric"><span>${icon("pin", 17)} <span id="selection-caption">SELECTED TRACK</span></span><strong id="point-count">No track selected</strong><span id="analytics-source" class="metric-note">Open a file to begin</span></div></section>
   <section class="profile-card" aria-label="Elevation profile"><div class="profile-heading"><span>ELEVATION PROFILE</span><span id="profile-range"></span></div><div id="profile"></div><div class="profile-note-slot"><div id="elevation-note" class="elevation-note" role="status" aria-live="polite"></div></div></section>
   <section id="create-card" class="card create-card" aria-label="Route Card" hidden>
-    <div class="card-heading"><h2>Route Card <span id="waypoint-count" class="badge">0</span></h2><button id="card-detail-toggle" class="button secondary compact" aria-pressed="false" hidden>Full Card</button><span class="card-expand-hint" id="card-expand-hint">Expand to Share</span><button id="expand-card" aria-describedby="card-expand-hint" class="icon-button" aria-label="Expand Route Card" aria-expanded="false" title="Expand Route Card">${icon("expand", 18)}</button></div>
-    <p id="card-summary-note" class="card-source-note" hidden></p>
+    <div class="card-heading"><h2>Route Card <span id="waypoint-count" class="badge">0</span></h2><span class="card-expand-hint" id="card-expand-hint">Expand to Share</span><button id="expand-card" aria-describedby="card-expand-hint" class="icon-button" aria-label="Expand Route Card" aria-expanded="false" title="Expand Route Card">${icon("expand", 18)}</button></div>
     <div class="create-settings"><label><span id="card-name-label">Route name</span><input id="create-name" class="text-input" maxlength="120" value="Created Route"></label></div>
     <div class="waypoint-scroll" role="region" aria-label="Route points" tabindex="0"><table class="waypoint-table"><caption class="sr-only">Route points in walking order</caption><colgroup><col class="point-col"><col class="name-col"><col class="grid-col"><col class="height-col"><col class="card-extra distance-col"><col class="card-extra cumulative-distance-col"><col class="card-extra ascent-col"><col class="card-extra cumulative-ascent-col"><col class="compact-delete"></colgroup><thead><tr><th scope="col">Point</th><th class="point-name-cell" scope="col">Name</th><th id="coordinate-heading" scope="col">Grid ref.</th><th scope="col">Height<span class="heading-unit">(m)</span></th><th class="card-extra distance-cell" scope="col">Distance<span class="heading-unit">(km)</span></th><th class="card-extra" scope="col">Cumul<br>Distance<span class="heading-unit">(km)</span></th><th class="card-extra" scope="col">Ascent<span class="heading-unit">(m)</span></th><th class="card-extra" scope="col">Cumul<br>Ascent<span class="heading-unit">(m)</span></th><th class="compact-delete" scope="col"><span class="sr-only">Delete point</span></th></tr></thead><tbody id="waypoint-rows"></tbody></table></div>
     <div class="card-share-actions card-extra"><button id="create-share" class="button secondary">${icon("export", 17)}Share Text</button><button id="create-pdf" class="button secondary">${icon("file", 17)}Share PDF</button></div>
     <div class="create-buttons"><button id="create-terrain" class="button secondary">${icon("mountain", 17)}Fetch Terrain</button><button id="create-clear" class="button secondary">${icon("trash", 17)}Clear route</button><button id="create-save" class="button primary">${icon("export", 17)}Save Route</button></div>
   </section>
-  <footer><span>Your files stay on your device. Map & terrain requests use the internet.</span></footer>
 </main>
 <div id="notice" class="notice" role="status" hidden></div>
 <dialog id="dialog"><div id="dialog-content"></div></dialog>
@@ -251,6 +248,7 @@ document.addEventListener("visibilitychange", () => {
     flushWorkspace();
 });
 function fitMap() {
+  if (!draft().points.length) return;
   createMap.fit([draft()]);
   return;
 }
@@ -375,6 +373,7 @@ function render() {
   renderMap();
   $<HTMLButtonElement>("undo").disabled = !createUndo.length || busy;
   $<HTMLButtonElement>("redo").disabled = !createRedo.length || busy;
+  $<HTMLButtonElement>("fit").disabled = !draft().points.length;
   // Restore these persistent controls after every fetch/save outcome.
   $<HTMLButtonElement>("expand").disabled = busy;
   $<HTMLButtonElement>("expand-card").disabled = busy;
@@ -407,9 +406,10 @@ async function exportTrack(track: Track) {
     render();
   }
 }
-function openDialog(content: string, variant?: "about" | "plan") {
+function openDialog(content: string, variant?: "about" | "plan" | "settings") {
   $("dialog").classList.toggle("plan-dialog", variant === "plan");
   $("dialog").classList.toggle("about-dialog", variant === "about");
+  $("dialog").classList.toggle("settings-dialog", variant === "settings");
   $("dialog-content").innerHTML = content;
   $<HTMLDialogElement>("dialog").showModal();
   $("dialog").setAttribute("aria-labelledby", "dialog-title");
@@ -481,15 +481,21 @@ function dialogHeader(title: string, subtitle = "", branded = false) {
   return `<div class="dialog-heading${branded ? " branded-dialog-heading" : ""}"><div class="dialog-heading-content">${branded ? `<img class="dialog-logo" src="${import.meta.env.BASE_URL}logo.svg" alt="BareGPS" width="36" height="36">` : ""}<div><h2 id="dialog-title">${title}</h2>${subtitle ? `<p>${subtitle}</p>` : ""}</div></div><button class="icon-button" data-close aria-label="Close dialog">${icon("close", 20)}</button></div>`;
 }
 function colourForm(initial: string) {
-  return `<form id="colour-form"><hex-color-picker id="colour-spectrum" color="${initial}"></hex-color-picker><div class="colour-presets" role="group" aria-label="Preset colours">${COLORS.map((color) => `<button type="button" class="colour-preset" data-colour="${color}" style="--line-colour:${color}" aria-label="Use ${color}" aria-pressed="${color === initial}"></button>`).join("")}</div><label class="field-label" for="colour-hex">Hex colour</label><div class="colour-value"><span id="colour-preview" style="--line-colour:${initial}" aria-hidden="true"></span><input id="colour-hex" class="text-input" value="${initial.toUpperCase()}" pattern="#[0-9A-Fa-f]{6}" maxlength="7" spellcheck="false" autocapitalize="characters" required title="Use # followed by six hexadecimal characters"></div><div class="dialog-actions"><button class="button primary">Apply colour</button></div></form>`;
+  return `<form id="colour-form"><div class="colour-presets" role="group" aria-label="Preset colours">${COLORS.map(({ name, color }) => `<button type="button" class="colour-preset" data-colour="${color}" style="--line-colour:${color}" aria-label="Use ${name}" title="${name}" aria-pressed="${color === initial}"></button>`).join("")}</div><label class="field-label" for="colour-hex">Hex colour</label><div class="colour-value"><span id="colour-preview" style="--line-colour:${initial}" aria-hidden="true"></span><input id="colour-hex" class="text-input" value="${initial.toUpperCase()}" pattern="#[0-9A-Fa-f]{6}" maxlength="7" spellcheck="false" autocapitalize="characters" required title="Use # followed by six hexadecimal characters"></div><div class="dialog-actions"><button id="apply-colour" class="button primary" disabled>Apply colour</button></div></form>`;
 }
 function bindColourPicker(apply: (color: string) => void) {
-  const spectrum = $<HexColorPicker>("colour-spectrum");
   const field = $<HTMLInputElement>("colour-hex");
+  const applyButton = $<HTMLButtonElement>("apply-colour");
+  function updateApplyState() {
+    applyButton.disabled =
+      !/^#[0-9a-f]{6}$/i.test(field.value) ||
+      field.value.toLowerCase() === draft().color.toLowerCase();
+  }
+  updateApplyState();
   function preview(color: string, updateField: boolean) {
-    if (!/^#[0-9a-f]{6}$/i.test(color)) return;
-    spectrum.color = color;
     if (updateField) field.value = color.toUpperCase();
+    updateApplyState();
+    if (!/^#[0-9a-f]{6}$/i.test(color)) return;
     $("colour-preview").style.setProperty("--line-colour", color);
     document
       .querySelectorAll<HTMLButtonElement>("[data-colour]")
@@ -500,9 +506,6 @@ function bindColourPicker(apply: (color: string) => void) {
         ),
       );
   }
-  spectrum.addEventListener("color-changed", (event) =>
-    preview(event.detail.value, true),
-  );
   field.oninput = () => preview(field.value, false);
   document
     .querySelectorAll<HTMLButtonElement>("[data-colour]")
@@ -512,8 +515,9 @@ function bindColourPicker(apply: (color: string) => void) {
     );
   $("colour-form").onsubmit = (event) => {
     event.preventDefault();
-    if (!field.reportValidity()) return;
+    if (!field.reportValidity() || applyButton.disabled) return;
     apply(field.value.toLowerCase());
+    updateApplyState();
     $("colour-status").textContent = "Route colour applied.";
   };
 }
@@ -677,27 +681,14 @@ function renderCreated() {
     busy || selectedCreatePoint === null;
   renderPointCard();
 }
-let fullRouteCard = false;
-$("card-detail-toggle").onclick = () => {
-  fullRouteCard = !fullRouteCard;
-  renderPointCard();
-};
 let cardSourceKey = "";
 function renderPointCard() {
   const context = routeCardContext();
   const route = context?.route ?? emptyCardRoute;
   const points = route.points;
   const offset = context?.offset ?? 0;
-  const rows = routecardRows(route, context?.terrain, fullRouteCard);
+  const rows = routecardRows(route, context?.terrain);
   $("waypoint-count").textContent = String(rows.length);
-  const detailToggle = $<HTMLButtonElement>("card-detail-toggle");
-  detailToggle.hidden = points.length <= SUMMARY_CARD_POINTS;
-  detailToggle.disabled = busy;
-  detailToggle.textContent = fullRouteCard ? "Summary Card" : "Full Card";
-  detailToggle.setAttribute("aria-pressed", String(fullRouteCard));
-  const summaryNote = $("card-summary-note");
-  summaryNote.hidden = points.length <= SUMMARY_CARD_POINTS;
-  summaryNote.textContent = `${fullRouteCard ? "Full card" : "Summary card"}: ${rows.length} of ${points.length} route points. ${!fullRouteCard && rows.length > SUMMARY_CARD_POINTS ? "All named points retained; more than 30 checkpoints. " : ""}Distances and ascent use the full route. GPX keeps every point.`;
   const nameField = $<HTMLInputElement>("create-name");
   nameField.value = route.name;
   nameField.readOnly = false;
@@ -722,7 +713,7 @@ function renderPointCard() {
   const table =
     $("create-card").querySelector<HTMLTableElement>(".waypoint-table")!;
   const scroller = table.parentElement!;
-  const key = `${context?.source.id}:${offset}:${points.length}:${cardExpanded}:${fullRouteCard}`;
+  const key = `${context?.source.id}:${offset}:${points.length}:${cardExpanded}`;
   if (cardSourceKey !== key) {
     scroller.scrollTop = 0;
     cardSourceKey = key;
@@ -895,21 +886,24 @@ $("create-save").onclick = () => {
 $("create-reset").onclick = () => {
   if (busy || !draft().points.length) return;
   openDialog(
-    `${dialogHeader("Reset route?", "Remove all points from this route.")}<p>Your route name, colour and saved GPX files stay in place. You can undo this reset.</p><div class="dialog-actions"><button class="button secondary" data-close>Cancel</button><button id="confirm-reset-created" class="button primary">Reset</button></div>`,
+    `${dialogHeader("Reset route?", "Remove all points from this route.")}<p>The route name returns to Created Route. Your colour and saved GPX files stay in place. You can undo this reset.</p><div class="dialog-actions"><button class="button secondary" data-close>Cancel</button><button id="confirm-reset-created" class="button primary">Reset</button></div>`,
   );
   $("confirm-reset-created").onclick = () => {
     selectedCreatePoint = null;
     drawingMode = "add";
-    changeCreated(() => ({ ...draft(), points: [] }));
+    nameEditStarted = false;
+    changeCreated(() => ({ ...draft(), name: DEFAULT_ROUTE_NAME, points: [] }));
     $<HTMLDialogElement>("dialog").close();
   };
 };
 $("create-clear").onclick = () => {
   if (busy) return;
   openDialog(
-    `${dialogHeader("Clear Created Route?", "Your saved GPX files stay in place.")}<p>You can undo this change. Save the current route first if you need a GPX copy.</p><div class="dialog-actions"><button class="button secondary" data-close>Cancel</button><button id="confirm-clear-created" class="button primary">Clear route</button></div>`,
+    `${dialogHeader("Clear route?", "Your saved GPX files stay in place.")}<p>You can undo this change. Save the current route first if you need a GPX copy.</p><div class="dialog-actions"><button class="button secondary" data-close>Cancel</button><button id="confirm-clear-created" class="button primary">Clear route</button></div>`,
   );
   $("confirm-clear-created").onclick = () => {
+    selectedCreatePoint = null;
+    nameEditStarted = false;
     drawingMode = "add";
     changeCreated(newCreatedRoute);
     $<HTMLDialogElement>("dialog").close();
@@ -931,11 +925,12 @@ $("create-pdf").onclick = async () => {
     ? structuredClone(context.terrain)
     : undefined;
   const system = coordinateSystem;
+  const showPointNames = allowPointNaming;
   try {
     const { routecardPDF } = await import("./routecard-pdf");
     await sharePDF(
       route.name,
-      routecardPDF(route, system, terrain, context.offset, fullRouteCard),
+      routecardPDF(route, system, terrain, context.offset, showPointNames),
     );
   } catch (error) {
     if (!isCancelled(error)) report(error);
@@ -966,7 +961,6 @@ $("create-share").onclick = async () => {
     coordinateSystem,
     context.terrain,
     context.offset,
-    fullRouteCard,
   );
   try {
     if (await shareRoutecard(title, text)) return;
@@ -993,7 +987,7 @@ $("create-share").onclick = async () => {
 $("create-terrain").onclick = () => {
   if (busy || draft().points.length < 2) return;
   openDialog(
-    `${dialogHeader("Fetch Created Route Terrain")}<p>Route coordinates are sent to Open Topo Data to sample heights about every 90 metres along each straight leg. Ascent is an estimate. This does not make the route follow paths.</p><div class="dialog-actions"><button class="button secondary" data-close>Cancel</button><button id="confirm-create-terrain" class="button primary">Fetch route terrain</button></div>`,
+    `${dialogHeader("Fetch terrain")}<p>Route coordinates are sent to Open Topo Data to sample heights about every 90 metres along each straight leg. Ascent is an estimate. This does not make the route follow paths.</p><div class="dialog-actions"><button class="button secondary" data-close>Cancel</button><button id="confirm-create-terrain" class="button primary">Fetch route terrain</button></div>`,
   );
   $("confirm-create-terrain").onclick = () => fetchCreatedTerrain(false);
 };
@@ -1007,7 +1001,7 @@ async function fetchCreatedTerrain(saveAfter: boolean) {
   terrainController = new AbortController();
   render();
   openDialog(
-    `${dialogHeader(saveAfter ? "Preparing Route for Saving" : "Fetching Created Route Terrain")}<p class="dialog-note">Route coordinates are sent to Open Topo Data for terrain heights.</p><p id="create-terrain-progress" role="status">Preparing route…</p><div class="dialog-actions"><button id="cancel-create-terrain" class="button secondary">Cancel</button></div>`,
+    `${dialogHeader(saveAfter ? "Preparing to save" : "Fetching terrain")}<p class="dialog-note">Route coordinates are sent to Open Topo Data for terrain heights.</p><p id="create-terrain-progress" role="status">Preparing route…</p><div class="dialog-actions"><button id="cancel-create-terrain" class="button secondary">Cancel</button></div>`,
   );
   bindTerrainCancellation("cancel-create-terrain");
   let failure: unknown;
@@ -1118,7 +1112,7 @@ $("undo").onclick = () => history(true);
 $("redo").onclick = () => history(false);
 $("settings").onclick = () => {
   openDialog(
-    `${dialogHeader("Settings", "", true)}<section class="settings-grid-section"><h3 id="grid-settings-heading">Grid references</h3><p class="system-picker-prompt">Choose a Grid Reference System.</p><label id="available-systems-heading" class="field-label system-picker-label" for="coordinate-system">Available Systems</label><select id="coordinate-system" class="text-input system-picker" aria-labelledby="available-systems-heading">${Object.entries(
+    `${dialogHeader("Settings", "", true)}<div class="settings-dialog-body" role="region" aria-label="Settings options" tabindex="0"><section class="settings-grid-section"><h3 id="grid-settings-heading">Grid references</h3><p class="system-picker-prompt">Choose a Grid Reference System.</p><label id="available-systems-heading" class="field-label system-picker-label" for="coordinate-system">Available Systems</label><select id="coordinate-system" class="text-input system-picker" aria-labelledby="available-systems-heading">${Object.entries(
       coordinateSystems,
     )
       .map(
@@ -1127,7 +1121,8 @@ $("settings").onclick = () => {
       )
       .join(
         "",
-      )}</select></section><section class="product-colour-settings"><h3 class="settings-colour-heading">Route Colour</h3>${colourForm(draft().color)}<p id="colour-status" class="dialog-note" role="status"></p></section><section class="settings-point-naming"><div class="settings-toggle-row"><h3 id="point-naming-heading">Allow Point Naming</h3><button id="allow-point-naming" class="settings-switch" type="button" role="switch" aria-labelledby="point-naming-heading" aria-describedby="point-naming-description" aria-checked="${allowPointNaming}"><span aria-hidden="true"></span></button></div><p id="point-naming-description">Allow individual points in a route to be named.</p></section><button class="button primary full" data-close>Done</button>`,
+      )}</select></section><section class="product-colour-settings"><h3 class="settings-colour-heading">Route Colour</h3>${colourForm(draft().color)}<p id="colour-status" class="dialog-note" role="status"></p></section><section class="settings-point-naming"><div class="settings-toggle-row"><h3 id="point-naming-heading">Allow Point Naming</h3><button id="allow-point-naming" class="settings-switch" type="button" role="switch" aria-labelledby="point-naming-heading" aria-describedby="point-naming-description" aria-checked="${allowPointNaming}"><span aria-hidden="true"></span></button></div><p id="point-naming-description">Allow individual points in a route to be named.</p></section></div><div class="settings-dialog-actions"><button class="button primary full" data-close>Done</button></div>`,
+    "settings",
   );
   $("allow-point-naming").onclick = async () => {
     allowPointNaming = !allowPointNaming;
@@ -1216,6 +1211,6 @@ async function init() {
     );
   }
   render();
-  fitMap();
+  createMap.fit([draft()]);
 }
 void init();

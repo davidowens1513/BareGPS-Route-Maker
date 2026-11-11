@@ -10,7 +10,6 @@ export class TrackMap {
   private tileLayer: L.TileLayer;
   private tileFailed = false;
   private failedTiles = new Set<HTMLElement>();
-  private initialViewPending = true;
   constructor(private onTileError: (failed: boolean) => void) {
     this.map = L.map("create-map", {
       zoomControl: false,
@@ -56,7 +55,6 @@ export class TrackMap {
     L.control.zoom({ position: "bottomleft" }).addTo(this.map);
   }
   home() {
-    this.initialViewPending = false;
     this.map.setView(HOME_CENTER, HOME_ZOOM, { animate: false });
   }
   hasTileError() {
@@ -91,7 +89,6 @@ export class TrackMap {
       interactive: false,
     }).addTo(this.positionLayers);
     if (centre) {
-      this.initialViewPending = false;
       this.map.invalidateSize({ pan: false });
       this.map.setView(
         position,
@@ -118,11 +115,7 @@ export class TrackMap {
     const coords = tracks.flatMap((t) =>
       t.points.map((p) => [p.lat, p.lon] as L.LatLngTuple),
     );
-    if (coords.length) this.initialViewPending = false;
-    if (!coords.length) {
-      if (!this.initialViewPending) this.home();
-      return;
-    }
+    if (!coords.length) return;
     this.map.fitBounds(L.latLngBounds(coords).pad(0.15), { maxZoom: 16 });
   }
 }
