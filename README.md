@@ -2,7 +2,7 @@
 
 Draw, shape and share a walking route directly on the map.
 
-**Current version: 0.1.1, build 2.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
+**Current version: 0.1.2, build 3.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
 
 [Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker)
 
@@ -29,7 +29,7 @@ Lines connect points directly; they do not automatically follow paths. Check acc
 
 Route Maker contains drawing and route-card UI only. It has no GPX importer, Input Tracks, simplification module, Route Plan or inbound native-file queue. Its saved workspace holds only the drawing and fetched terrain.
 
-The two products have independent entry points and storage models; there is no product-mode switch. The current main branch includes the standalone source cleanup and published policy links in 0.1.1 (build 2).
+The two products have independent entry points and storage models; there is no product-mode switch. The current main branch includes the standalone source cleanup and published policy links, independent local dependencies and phone targets in 0.1.2 (build 3).
 
 ## Run and build
 
@@ -86,12 +86,20 @@ Each standalone product has its own app identity and local workspace key. Autosa
 
 Map providers receive viewed map areas; terrain providers receive coordinates. Browser terrain uses the Cloudflare relay. Sharing sends files only to the destination selected by the user. The in-app guide is not a complete privacy policy.
 
-Outstanding release work includes physical-device failure/lifecycle testing, accessibility/readability, measured supported sizes, a user backup/restore path, documented provider capacity, privacy/support/licence publication and actual TestFlight acceptance. Do not infer App Store readiness from a successful local install.
+Outstanding release work includes physical-device failure/lifecycle testing, accessibility/readability, measured supported sizes, a user backup/restore path, documented provider capacity, licence clarification and final Store privacy-label submission and actual TestFlight acceptance. Do not infer App Store readiness from a successful local install.
 
 Copyright © AppsbyOnzy. Support: [appsbyonzy@gmail.com](mailto:appsbyonzy@gmail.com). Dependency and map credits are in About. No new source licence is implied by this split; third-party licences remain applicable.
 
 ## Support and privacy
 
-Published on 11 November 2026, with the green Route Maker logo: [Support](https://mixolydian-flyingfish-56d.notion.site/BareGPS-Route-Maker-Support-Page-4150e3f94c3580c99fd8e2fad309826e) and [Privacy Policy](https://mixolydian-flyingfish-56d.notion.site/BareGPS-Route-Maker-Privacy-Policy-4150e3f94c35804389a3f3d3773b261e). Both are linked at the top of About. See `docs/privacy/declaration-review-2026-11-11.md` for the code and dependency audit and the remaining App Store privacy-label decision. Version 0.1.1 (build 2) includes these links and the standalone source cleanup.
+Published on 11 November 2026, with the green Route Maker logo: [Support](https://mixolydian-flyingfish-56d.notion.site/BareGPS-Route-Maker-Support-Page-4150e3f94c3580c99fd8e2fad309826e) and [Privacy Policy](https://mixolydian-flyingfish-56d.notion.site/BareGPS-Route-Maker-Privacy-Policy-4150e3f94c35804389a3f3d3773b261e). Both are linked at the top of About. See `docs/privacy/declaration-review-2026-11-11.md` for the code and dependency audit and the conservative privacy assumptions and remaining App Store submission. Version 0.1.2 (build 3) includes these links, conservative provider-request declarations and independent dependencies.
 
 The native sync script normalises the generated iOS dependency path to this project’s node_modules folder, so a source bundle does not require Track Editor beside it.
+
+Route Maker now has its own physical node_modules folder on the development Mac. Its Android and iOS projects resolve libraries within Route Maker; Track Editor is not required to build or run it. Install the locked dependencies with npm ci when setting up a fresh checkout.
+
+## Supported devices
+
+Native builds target phones: iPhone (device family 1) and Android small/normal screen classes, with common and intermediate densities listed for store filtering. iPad native layouts are not targeted. Tablets, including iPads, use the responsive [web version](https://appsbyonzy.dev/tools/baregps-route-maker/), covered by a tablet browser test alongside phone and desktop tests.
+
+Apple can still offer an iPhone app on iPad in compatibility mode. Android compatible-screen declarations filter store distribution but do not prevent manual APK sideloading; final Play device availability must be reviewed before submission. No artificial hardware requirement has been added.

@@ -1,0 +1,44 @@
+{
+  "reviewed": "2026-11-11",
+  "product": "BareGPS Route Maker",
+  "status": "conservative_declarations_in_0.1.2_build_3",
+  "tracking_in_app": false,
+  "advertising_sdks": false,
+  "accounts": false,
+  "location_permission": "optional one-shot map positioning",
+  "known_network_data": {
+    "map": "tile paths/viewed areas, IP and normal request metadata",
+    "terrain": "sampled route coordinates in GET query, IP and normal request metadata"
+  },
+  "provider_log_retention_days": {
+    "OpenTopoMap": null,
+    "OpenTopoData": null
+  },
+  "null_means": "not publicly established; not zero",
+  "app_store_collection_answer": "Yes - conservative treatment of possible retained provider requests",
+  "manifest_collected_data_list": "included in native source and build 3; no App Store submission",
+  "inquiries": "not sent; user declined provider contact",
+  "categories": [
+    {
+      "name": "Precise Location",
+      "purpose": "App Functionality",
+      "linked_to_user": true,
+      "tracking": false
+    },
+    {
+      "name": "Coarse Location",
+      "purpose": "App Functionality",
+      "linked_to_user": true,
+      "tracking": false
+    },
+    {
+      "name": "Other Diagnostic Data",
+      "purpose": "App Functionality",
+      "linked_to_user": true,
+      "tracking": false
+    }
+  ],
+  "basis": "Known external coordinate/tile requests and request metadata; treat possible provider logs as retained and potentially IP-linked, without claiming verified production retention. This is a conservative disclosure assumption, not confirmed provider practice.",
+  "app_store_connect": "not changed or submitted",
+  "publication": "Git and website publication authorised after hold; see release evidence"
+}

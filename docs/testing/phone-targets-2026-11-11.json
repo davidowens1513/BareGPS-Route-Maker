@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-11",
+  "version": "0.1.2",
+  "build": 3,
+  "ios_build": "passed",
+  "ios_built_UIDeviceFamily": [
+    1
+  ],
+  "android_release_build": "passed; non-debuggable and permanent signing certificate verified during packaging",
+  "android_store_screen_classes": [
+    "small",
+    "normal"
+  ],
+  "android_sideload_block": false,
+  "ios_ipad_compatibility_mode": "Apple may still offer iPhone apps on iPads; no native iPad target",
+  "web_tablet_support": "820x1180 browser checks passed",
+  "unit_tests": 49,
+  "browser_checks": 9,
+  "independent_dependencies": true,
+  "physical_native_failure_lifecycle_accessibility_acceptance": "still outstanding; not inferred from builds/browser tests"
+}

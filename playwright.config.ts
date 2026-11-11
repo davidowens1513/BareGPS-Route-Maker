@@ -3,6 +3,7 @@ export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: false,
   projects: [
+    { name: "tablet", use: { viewport: { width: 820, height: 1180 }, isMobile: true, hasTouch: true } },
     { name: "desktop", use: { viewport: { width: 1280, height: 900 } } },
     {
       name: "phone",

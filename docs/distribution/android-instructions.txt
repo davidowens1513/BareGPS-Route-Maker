@@ -1,7 +1,9 @@
 BAREGPS ROUTE MAKER - ANDROID
-Version 0.1.1 build 2
+Version 0.1.2 build 3
 
 Install the signed APK as an update, or unzip the Android bundle and open its APK. Keep your GPX originals. No account is required.
+
+Native distribution targets Android phones (small/normal screen classes). Tablets should use https://appsbyonzy.dev/tools/baregps-route-maker/ . The manifest filters store distribution; it does not block manual APK sideloading.
 
 Maps and terrain require internet. Route lines do not automatically follow paths.
 Support: appsbyonzy@gmail.com

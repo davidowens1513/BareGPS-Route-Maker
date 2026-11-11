@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-11",
+  "product": "BareGPS Route Maker",
+  "libraries": "fresh npm ci from package-lock.json in its own physical node_modules directory",
+  "external_library_symlinks": 0,
+  "android_dependency_paths": "project-local node_modules",
+  "ios_dependency_paths": "project-local node_modules",
+  "unit_tests": 49,
+  "browser_checks": 6,
+  "production_web_build": "passed",
+  "android_release_build": "passed",
+  "ios_device_target_build": "passed",
+  "sibling_project_modified": false,
+  "git_commit_push": "held by user",
+  "website_publish": "held by user",
+  "phone_install": "not requested for dependency-folder change"
+}

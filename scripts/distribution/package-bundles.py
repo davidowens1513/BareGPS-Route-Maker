@@ -65,7 +65,7 @@ for platform in (['ios','android'] if args.platform=='both' else [args.platform]
             archive.write(apk,filename)
             archive.writestr('SHA256SUMS.txt',hashlib.sha256(apk.read_bytes()).hexdigest()+'  '+filename+'\n')
         else:
-            for name in ['src','public','dist','ios']:
+            for name in ['src','public','dist','ios','docs/privacy']:
                 add_tree(archive,root/name)
             for name in ['package.json','package-lock.json','tsconfig.json','vite.config.ts','capacitor.config.ts','index.html','.gitignore','.gitattributes','README.md','scripts/distribution/normalize-ios-package.mjs']:
                 archive.write(root/name,name)
