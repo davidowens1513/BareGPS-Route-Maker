@@ -2,7 +2,7 @@
 
 Draw, shape and share a hiking route directly on the map.
 
-**Current version: 0.1.5, build 11.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
+**Current versions: iOS 1.0.0 (build 101); Android 0.1.5 (build 11); web/source package 0.1.5.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
 
 [Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker)
 
@@ -127,3 +127,10 @@ On a fresh workspace, the map was constructed while hidden and skipped its size 
 - About keeps its heading and controls visible while the text scrolls. It includes the revised route-making bullets, plain-English terrain and Route Card explanations, accurate provider names and expandable third-party copyright/licence notices. The footer and drawing-point cap have been removed; terrain sampling retains its separate limit.
 
 Validation: 49 unit tests and 44 browser checks passed across phone, tablet and desktop layouts (one desktop touch-only check intentionally skipped). Android release and iPhone device builds passed. Both phones received and launched the latest functional changes before this publication; public build 11 adds release version metadata. These checks do not close the broader Store acceptance work described above.
+
+
+## First App Store upload — iOS 1.0.0 (build 101)
+
+The iPhone archive was uploaded successfully to App Store Connect on 11 November 2026 as version 1.0.0, build 101. The app record uses `com.baregps.routemaker`. Upload completion is not App Store approval or publication. The iOS source download now includes these Xcode version and signing settings; developers should select their own signing team.
+
+Android remains 0.1.5, build 11, and the web preview retains the same current app features. Store screenshots and the preview recording are kept locally and are not included in Git or website downloads.
