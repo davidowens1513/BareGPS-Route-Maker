@@ -23,16 +23,19 @@ class Links(HTMLParser):
 links=Links();links.feed(html)
 if args.previous:
     prior=Links();prior.feed(args.previous.read_text())
-    assert {href for href in prior.hrefs if not href.startswith('tools/baregps-track-editor/')}<=set(links.hrefs),'An unrelated website link was removed or changed.'
+    assert {href for href in prior.hrefs if not href.startswith('tools/baregps-route-maker/')}<=set(links.hrefs),'An unrelated website link was removed or changed.'
     for href in prior.hrefs:
-        if href.startswith('tools/baregps-track-editor/'):
-            assert (site/href).is_file(), 'A previous version download was removed.'
+        if href.startswith('tools/baregps-route-maker/'):
+            assert (site/href).exists(), 'A previous version download was removed.'
 assert html.index('id="tools"')>html.index('id="openbaremap"')
-assert html.count('Will be available through App Store')==1
-assert 'https://github.com/davidowens1513/BareGPS-Track-Editor' in links.hrefs
-prefix=f'tools/baregps-track-editor/{args.version}/'
+assert 'id="baregps-route-maker"' in html
+assert 'https://github.com/davidowens1513/BareGPS-Route-Maker' in links.hrefs
+prefix=f'tools/baregps-route-maker/{args.version}/'
 manifest=json.loads((site/prefix/'manifest.json').read_text())
 checks=[]
+for name in manifest['files']:
+    if name.endswith(('.zip', '.apk', 'instructions.txt')):
+        assert prefix+name in links.hrefs, f'Missing current download link: {name}'
 for name,info in manifest['files'].items():
     path=prefix+name
     url=args.base_url.rstrip('/')+'/'+path if args.base_url else None

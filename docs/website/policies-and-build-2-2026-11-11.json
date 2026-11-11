@@ -1,0 +1,40 @@
+{
+  "base_url": "https://appsbyonzy.dev",
+  "existing_links_preserved": true,
+  "tools_after_openbaremap": true,
+  "platform_bundles_valid": true,
+  "downloads": [
+    {
+      "path": "tools/baregps-route-maker/0.1.1/android/BareGPS-Route-Maker-0.1.1.apk",
+      "bytes": 3998877,
+      "sha256": "42ea97c0b4fa789a040e054448253aa5d366717c968ce3f6b44291ae45d7dd86"
+    },
+    {
+      "path": "tools/baregps-route-maker/0.1.1/android/BareGPS-Route-Maker-android-Bundle-0.1.1.zip",
+      "bytes": 3610074,
+      "sha256": "c54e12f745514cc18f5fe617ea8b93ed1b05e4b224cc035ae46fb03d6533cd64"
+    },
+    {
+      "path": "tools/baregps-route-maker/0.1.1/android/instructions.txt",
+      "bytes": 610,
+      "sha256": "484e24379221d92a2d26ffe046cc87b1f09adc849802d10f88a87f13ec92be41"
+    },
+    {
+      "path": "tools/baregps-route-maker/0.1.1/ios/BareGPS-Route-Maker-ios-Bundle-0.1.1.zip",
+      "bytes": 958150,
+      "sha256": "1afe0b310ec68ab2935810ce3109b3b8b35591d7ed258496ee4dbe226511195d"
+    },
+    {
+      "path": "tools/baregps-route-maker/0.1.1/ios/instructions.txt",
+      "bytes": 778,
+      "sha256": "f2d31cc439c43ec7cec962f719448ae795a225ee0434f6649eb9fba7905808dd"
+    }
+  ],
+  "date": "2026-11-11",
+  "version": "0.1.1",
+  "build": 2,
+  "public_policy_links": true,
+  "preview_entry_and_primary_assets_match": true,
+  "homepage_email_obfuscation": "Cloudflare modifies only the footer email link/text and adds its email decoder",
+  "previous_downloads_retained": true
+}

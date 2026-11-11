@@ -14,5 +14,9 @@
   "privacy_manifest_in_built_app": "verified; no tracking and empty tracking-domain list",
   "privacy_connect_label": "not published; provider retention/linkage must be confirmed",
   "pdf": "5 pages; saved on Desktop",
-  "native_acceptance_scope": "install/launch only; broader lifecycle, save/share and iPad acceptance remains"
+  "native_acceptance_scope": "install/launch only; broader lifecycle, save/share and iPad acceptance remains",
+  "public_downloads": "matching APK, Android bundle, iOS source bundle and instructions verified by checksum on website",
+  "ios_source_dependency_path": "normalised to project-local node_modules, rebuilt successfully",
+  "website_policy_links": "live on homepage and in web preview About",
+  "roadmap_pdf_sha256": "04e007136dbef51f5c714f82809d12d98a14e3264ac93d64cf77996fb23b337d"
 }
