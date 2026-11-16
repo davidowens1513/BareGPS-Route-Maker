@@ -1,4 +1,5 @@
 import L from "leaflet";
+import { mapLayers, type MapLayer } from "./map-layers";
 import type { Track, Point } from "./model";
 import { routeTapIndex, isClosedRoute, type DrawingMode } from "./create";
 export const HOME_CENTER: L.LatLngTuple = [51.99947, -9.74269];
@@ -7,7 +8,8 @@ export class TrackMap {
   map: L.Map;
   protected layers = L.layerGroup();
   private positionLayers = L.layerGroup();
-  private tileLayer: L.TileLayer;
+  private tileLayer!: L.TileLayer;
+  private baseLayer: MapLayer | null = null;
   private tileFailed = false;
   private failedTiles = new Set<HTMLElement>();
   constructor(private onTileError: (failed: boolean) => void) {
@@ -16,16 +18,31 @@ export class TrackMap {
       preferCanvas: true,
       attributionControl: true,
     }).setView(HOME_CENTER, HOME_ZOOM);
-    this.tileLayer = L.tileLayer(
-      "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 17,
-        subdomains: "abc",
-        attribution:
-          'Map © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · SRTM | <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
-      },
-    ).addTo(this.map);
-    const refresh = () => {
+    this.map.attributionControl.setPosition("bottomright");
+    this.setBaseLayer("opentopo");
+    window.addEventListener("online", () => {
+      if (this.tileFailed) this.retryTiles();
+    });
+    this.layers.addTo(this.map);
+    L.control
+      .scale({ position: "bottomleft", imperial: false })
+      .addTo(this.map);
+    L.control.zoom({ position: "bottomleft" }).addTo(this.map);
+  }
+  setBaseLayer(selected: MapLayer) {
+    if (selected === this.baseLayer) return;
+    if (this.tileLayer) {
+      this.tileLayer.remove();
+      this.tileLayer.off();
+    }
+    this.baseLayer = selected;
+    this.failedTiles.clear();
+    this.tileFailed = false;
+    if (this.baseLayer !== null && this.tileLayer) this.onTileError(false);
+    const config = mapLayers[selected];
+    const layer = L.tileLayer(config.url, config.options);
+    this.tileLayer = layer;
+    const refreshTileWarning = () => {
       for (const tile of this.failedTiles)
         if (!tile.isConnected) this.failedTiles.delete(tile);
       const failed = this.failedTiles.size > 0;
@@ -34,25 +51,17 @@ export class TrackMap {
         this.onTileError(failed);
       }
     };
-    this.tileLayer.on("tileerror", (e: L.TileErrorEvent) => {
-      if (e.tile.isConnected) this.failedTiles.add(e.tile);
-      refresh();
+    layer.on("tileerror", (event: L.TileErrorEvent) => {
+      if (event.tile.isConnected) this.failedTiles.add(event.tile);
+      refreshTileWarning();
     });
-    const recovered = (e: L.TileEvent) => {
-      this.failedTiles.delete(e.tile);
-      refresh();
+    const removeFailedTile = (event: L.TileEvent) => {
+      this.failedTiles.delete(event.tile);
+      refreshTileWarning();
     };
-    this.tileLayer.on("tileload", recovered);
-    this.tileLayer.on("tileunload", recovered);
-    window.addEventListener("online", () => {
-      if (this.tileFailed) this.retryTiles();
-    });
-    this.layers.addTo(this.map);
-    this.map.attributionControl.setPosition("bottomright");
-    L.control
-      .scale({ position: "bottomleft", imperial: false })
-      .addTo(this.map);
-    L.control.zoom({ position: "bottomleft" }).addTo(this.map);
+    layer.on("tileload", removeFailedTile);
+    layer.on("tileunload", removeFailedTile);
+    layer.addTo(this.map);
   }
   home() {
     this.map.setView(HOME_CENTER, HOME_ZOOM, { animate: false });

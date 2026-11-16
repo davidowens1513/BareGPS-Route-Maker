@@ -1,5 +1,6 @@
 import "leaflet/dist/leaflet.css";
 import "./style.css";
+import { mapLayers, isMapLayer, type MapLayer } from "./map-layers";
 import { aboutGuide } from "./about";
 import { get, set } from "idb-keyval";
 import { Capacitor } from "@capacitor/core";
@@ -18,6 +19,8 @@ import { routecardText, routecardRows } from "./routecard";
 import { enrichTerrain } from "./terrain";
 import { getDevicePosition, locationError } from "./location";
 let locating = false;
+let selectedMapLayer: MapLayer = "opentopo";
+const MAP_LAYER_KEY = "baregps-route-maker-map-layer-v1";
 import {
   coordinateSystems,
   formatCoordinate,
@@ -81,8 +84,8 @@ document.querySelector("#app")!.innerHTML = `
 <main>
   <span id="track-count" class="sr-only">Your workspace</span>
   <section id="map-panel" class="map-panel" aria-label="Track map">
-    <div class="map-toolbar"><span class="map-label">${icon("mountain", 18)}<strong>OpenTopoMap</strong><span class="terrain-label">TERRAIN</span></span><div class="map-actions"><button id="fit" class="icon-button" aria-label="Fit tracks to map" title="Fit tracks">${icon("fit", 18)}</button><button id="expand" class="icon-button" aria-label="Expand map" title="Expand map">${icon("expand", 18)}</button></div></div>
-    <div id="create-map-view" role="region" aria-label="Route creation map" hidden><div id="create-map" aria-label="Create a walking route"></div><button id="create-locate" class="icon-button map-locate" aria-label="Go to current position" title="Go to current position">${icon("locate", 21)}</button><span id="create-coordinates" class="map-coordinates" aria-label="Map centre coordinates"></span><p class="create-map-hint" id="create-map-hint">Tap the map to place your starting point.</p></div>
+    <div class="map-toolbar"><span class="map-label">${icon("mountain", 18)}<strong id="map-layer-name">OpenTopoMap</strong><span id="map-layer-badge" class="terrain-label">TERRAIN</span></span><div class="map-actions"><button id="fit" class="icon-button" aria-label="Fit tracks to map" title="Fit tracks">${icon("fit", 18)}</button><button id="expand" class="icon-button" aria-label="Expand map" title="Expand map">${icon("expand", 18)}</button></div></div>
+    <div id="create-map-view" role="region" aria-label="Route creation map" hidden><div id="create-map" aria-label="Create a walking route"></div><button id="create-locate" class="icon-button map-locate" aria-label="Go to current position" title="Go to current position">${icon("locate", 21)}</button><button id="map-layer-toggle" class="icon-button map-locate map-layer-toggle" aria-label="Switch to Satellite" title="Switch to Satellite">${icon("layers", 22)}</button><span id="create-coordinates" class="map-coordinates" aria-label="Map centre coordinates"></span><p class="create-map-hint" id="create-map-hint">Tap the map to place your starting point.</p></div>
     <div id="create-tools" class="create-tools" role="group" aria-label="Route drawing controls" hidden><div class="drawing-modes" role="group" aria-label="Drawing mode"><button id="draw-add" aria-pressed="true">Add points</button><button id="draw-insert" aria-pressed="false">Insert point</button><button id="create-delete" disabled>Delete point</button><button id="create-close">Close loop</button><button id="create-reset">Reset</button></div></div>
     <div id="create-map-error" class="map-error" hidden><span>Some map tiles couldn’t load. Editing still works.</span><div class="map-warning-actions"><button id="retry-create-map" class="text-button">Retry</button><button id="dismiss-create-map" class="icon-button" aria-label="Dismiss map warning">${icon("close", 16)}</button></div></div>
   </section>
@@ -157,6 +160,20 @@ function updateMapCoordinates(name: string, view: TrackMap) {
 }
 for (const name of ["create"])
   $(name + "-locate").onclick = goToCurrentPosition;
+function changeMapLayer(layer: MapLayer) {
+  selectedMapLayer = layer;
+  createMap.setBaseLayer(layer);
+  const label =
+    layer === "opentopo" ? "Switch to Satellite" : "Switch to OpenTopo";
+  $("map-layer-toggle").setAttribute("aria-label", label);
+  $("map-layer-toggle").title = label;
+  $("map-layer-name").textContent = mapLayers[layer].name;
+  $("map-layer-badge").textContent = mapLayers[layer].badge;
+}
+$("map-layer-toggle").onclick = () => {
+  changeMapLayer(selectedMapLayer === "opentopo" ? "satellite" : "opentopo");
+  void set(MAP_LAYER_KEY, selectedMapLayer).catch(report);
+};
 function renderLocationButtons() {
   for (const name of ["create"]) {
     const button = $<HTMLButtonElement>(name + "-locate");
@@ -377,6 +394,7 @@ function render() {
   // Restore these persistent controls after every fetch/save outcome.
   $<HTMLButtonElement>("expand").disabled = busy;
   $<HTMLButtonElement>("expand-card").disabled = busy;
+  $<HTMLButtonElement>("map-layer-toggle").disabled = busy;
   document.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
     if (
       busy &&
@@ -393,7 +411,7 @@ async function exportTrack(track: Track) {
   busy = true;
   render();
   try {
-    if (await saveTrack(track, "Created Route"))
+    if (await saveTrack(track))
       notification(
         Capacitor.isNativePlatform()
           ? "GPX saved to your chosen location."
@@ -1158,7 +1176,7 @@ $("settings").onclick = () => {
 };
 $("help").onclick = () =>
   openDialog(
-    `${dialogHeader("BareGPS Route Maker", "", true)}${aboutGuide}`,
+    `${dialogHeader("BareGPS Route Maker", "", true)}${aboutGuide.replace("<!-- selected-map-credits -->", mapLayers[selectedMapLayer].credits)}`,
     "about",
   );
 window.addEventListener("keydown", (e) => {
@@ -1188,6 +1206,8 @@ window.addEventListener("error", (e) => {
 });
 async function init() {
   try {
+    const savedLayer = await get(MAP_LAYER_KEY);
+    if (isMapLayer(savedLayer)) changeMapLayer(savedLayer);
     const savedCoordinates = await get(COORDINATE_KEY);
     allowPointNaming = (await get(POINT_NAMING_KEY)) === true;
     if (isCoordinateSystem(savedCoordinates))

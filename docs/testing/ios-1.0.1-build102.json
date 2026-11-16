@@ -1,0 +1,54 @@
+{
+  "app": "BareGPS Route Maker",
+  "ios_version": "1.0.1",
+  "ios_build": 102,
+  "bundle_identifier": "com.baregps.routemaker",
+  "archive": "/Users/davidowens/Library/Developer/Xcode/Archives/2026-11-16/App 16-11-2026, 08.45.xcarchive",
+  "archive_web_assets_match": true,
+  "asset_files": [
+    {
+      "file": "assets/html2canvas.esm-DXEQVQnt.js",
+      "sha256": "7b07a9ca175c614e8e7de447198d35b0d161dd50db2c63b5f7fd6ea0e1e876f2"
+    },
+    {
+      "file": "assets/index-D8yt0vhc.css",
+      "sha256": "4a1c3d5357c2fcfec0ce794e395e47e24968424290f2b81e9b09134f9564a730"
+    },
+    {
+      "file": "assets/index-OlS6VKSZ.js",
+      "sha256": "fa492677da270ed56b5e879376dffab8ee2f613e05b777f30e098caceb81098d"
+    },
+    {
+      "file": "assets/index.es-BaNFFpjy.js",
+      "sha256": "66770edfe0ec2a1a286965d935775b738dd566e78185e57bb1ee305d3ef7726d"
+    },
+    {
+      "file": "assets/purify.es-18JuyMri.js",
+      "sha256": "d20e7581818a4ef09a7a0e1bc84597c51fa253aea2b5b55935d5d7809793a28d"
+    },
+    {
+      "file": "assets/routecard-pdf-CFHNwNDH.js",
+      "sha256": "684d1f8bfdaf1caedc56835def5f529ea500275a145feef437c7cf014cb67bb8"
+    },
+    {
+      "file": "assets/web-ByTkIzK6.js",
+      "sha256": "a0db6dc4b467462760193a46e7d24ae89958bafbead87fe5516e0df762808270"
+    },
+    {
+      "file": "index.html",
+      "sha256": "f2157136c31bbed43fcc9186d7e5413f38884e975c172d5c500eeedb8f843b5e"
+    },
+    {
+      "file": "logo.svg",
+      "sha256": "372dcd79e2bfc65db85c2e99d1a02e8e57497ffff2110bc59b5dd00a652dd6dd"
+    }
+  ],
+  "tests": 64,
+  "typescript": "passed",
+  "production_web_build": "passed",
+  "capacitor_sync": "passed",
+  "xcode_build": "succeeded",
+  "xcode_archive": "succeeded",
+  "apple_upload": "not performed",
+  "published_privacy_policy": "Esri disclosure text prepared in docs/distribution/update-1.0.1.txt; apply before review submission"
+}

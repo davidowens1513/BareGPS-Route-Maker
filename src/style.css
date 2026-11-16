@@ -3080,3 +3080,7 @@ dialog.settings-dialog {
 .settings-dialog-actions {
   border-top: 2px solid var(--divider);
 }
+
+.map-layer-toggle {
+  top: 52px;
+}

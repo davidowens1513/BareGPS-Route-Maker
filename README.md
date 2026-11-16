@@ -4,14 +4,15 @@ Draw, shape and share a hiking route directly on the map.
 
 **Current versions: iOS 1.0.0 (build 101); Android 0.1.5 (build 11); web/source package 0.1.5.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
 
-[Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker)
+[Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker) · [Development and validation notes](docs/development.md)
 
 ## What it does
 
+- Switch between OpenTopo and Satellite with the layers icon below the location button; About credits follow the selected map.
 - Draw a route by tapping the map; insert, move or delete waypoints and close loops.
 - Choose a route name, line colour and regional coordinate system.
 - Fetch terrain estimates and show distance, ascent, descent and an elevation profile.
-- Save the full route as GPX; share every Route Card point as text or portrait PDF.
+- Save the full route as GPX, using the route name as the suggested filename; share every Route Card point as text or portrait PDF.
 - Keep a local drawing with Undo/Redo. Save Route spans the full row on iOS/Android.
 - Draw without an application-imposed waypoint cap; terrain requests retain their separate sampling limit.
 

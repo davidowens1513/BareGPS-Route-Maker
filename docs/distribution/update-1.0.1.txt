@@ -1,0 +1,19 @@
+BareGPS Route Maker — iOS 1.0.1 (102)
+
+WHAT'S NEW
+Your chosen route name is now used as the suggested GPX filename when saving.
+Switch directly between OpenTopo and Satellite maps using the layers icon below the location button. Your map choice is remembered, and map credits update automatically.
+
+REVIEW CHECKS
+1. Draw a route and enter a route name, for example Wicklow walk.
+2. Save Route. Allow terrain fetching if required. The iOS save picker should suggest Wicklow walk.gpx.
+3. Cancel the picker. Tap the layers icon; the map should switch without moving or changing the route.
+4. Save again and complete the export. Reopen About: credits should match the selected map.
+5. Cancel or fail a terrain request and verify that the layers icon works again afterwards.
+
+PRIVACY DISCLOSURE UPDATE TO APPLY BEFORE SUBMISSION
+The published privacy policy should explain that OpenTopoMap or Esri World Imagery receives map tile requests, according to the selected layer. Requests reveal the viewed area and ordinary network information, potentially including IP address. The app does not send route names to these map services. Terrain remains supplied by Open Topo Data.
+Esri provider information: https://www.esri.com/en-us/privacy/overview
+
+SOURCE
+This update is prepared in the RouteMakerDevelopment checkout. Android and website publication are separate release actions.
