@@ -23,5 +23,35 @@
     "source_bundle_includes_current_about": true,
     "source_bundle_includes_linked_development_notes": true
   },
-  "publication": "pending"
+  "publication": {
+    "status": "live",
+    "site": "https://appsbyonzy.dev/",
+    "preview": "https://appsbyonzy.dev/tools/baregps-route-maker/",
+    "deployment_id": "79323053-b8d5-4878-9523-f76cb5fd4646",
+    "deployment_url": "https://79323053.appsbyonzy.pages.dev/",
+    "live_checks": [
+      "Homepage shows iPhone 1.0.1 build 102 and Android 0.1.6 build 12",
+      "Track Editor remains listed as 0.3.5 build 78",
+      "Route Maker preview loads with single layer icon",
+      "Layer toggles directly in both directions",
+      "Satellite map attribution and About credits show Esri/Vantor",
+      "About describes remembered direct map switching"
+    ],
+    "downloads": [
+      {
+        "path": "ios/BareGPS-Route-Maker-ios-Bundle-0.1.6.zip",
+        "expanded_files_match": 82
+      },
+      {
+        "path": "android/BareGPS-Route-Maker-0.1.6.apk",
+        "sha256_matches": true
+      },
+      {
+        "path": "android/BareGPS-Route-Maker-android-Bundle-0.1.6.zip",
+        "expanded_files_match": 4
+      }
+    ],
+    "existing_site_files_preserved": true,
+    "restored_old_route_maker_files": true
+  }
 }

@@ -6,14 +6,14 @@
 - A single layers icon below the current-position button switches directly between OpenTopo and Satellite, preserving map position, zoom, drawing and edit history. The selected layer is stored separately from the route workspace.
 - Both the on-map attribution and About credits reflect the selected layer.
 - The layer button follows the current busy state on every render, re-enabling after saving or terrain work completes, fails or is cancelled.
-- iOS version prepared as 1.0.1 (102). Android project/source version is 0.1.6 (12); the public website remains unchanged.
+- iOS version is 1.0.1 (102). Android project/source and browser versions are 0.1.6 (12). The website publication record below covers their alignment.
 - Submission requires a fresh Xcode archive and App Store Connect upload/review. No submission is implied by source preparation.
 
 ## Validation
 
 - All 64 tests pass, including real native save request/GPX contents, UI rename-save flow with and without fetched terrain, layer preference/credits and recovery after success/cancel/failure.
 - TypeScript and production web build pass. Capacitor assets copied into both native projects; iOS dependency path normalized to this checkout.
-- Xcode build and release archive succeeded. Xcode Organizer shows com.baregps.routemaker, 1.0.1 (102), arm64. Every archived web asset matches the tested production build. [Archive validation](testing/ios-1.0.1-build102.json). The archive has not been uploaded to Apple.
+- Xcode build and release archive succeeded. Xcode Organizer shows com.baregps.routemaker, 1.0.1 (102), arm64. Every archived web asset matches the tested production build. [Archive validation](testing/ios-1.0.1-build102.json). The user subsequently reported uploading and submitting the update for review; this website publication does not submit or change an App Store version.
 - [Update text and review checks](distribution/update-1.0.1.txt).
 
 ## Review notes
@@ -24,7 +24,7 @@ Satellite uses Esri World Imagery; map area/network requests go to the selected 
 
 Installed and launched iOS 1.0.1 (102) on TestBed iOS. Installed release-signed Android 0.1.6 (12) on SM-A075F, retaining its existing release signing identity and app data. Android Studio uses Java 21 for this Gradle 8.14.3 project. The release signing properties can be provided through the existing environment variable or `-PbaregpsSigningProperties=/path/to/release.properties`; no private values are committed. All packaged Android web assets match the tested production build. [Installation verification](testing/phone-installs-2026-11-16.json).
 
-The Android phone rejected a development-signed update because its installed app was release-signed. The successful update used the permanent Route Maker release key; no uninstall or data clearing was used. Public website/downloads and Apple upload are unchanged.
+The Android phone rejected a development-signed update because its installed app was release-signed. The successful update used the permanent Route Maker release key; no uninstall or data clearing was used. These phone installations preceded the website publication documented below.
 
 
 ## Earlier README development record
@@ -65,4 +65,4 @@ Android remains 0.1.5, build 11, and the web preview retains the same current ap
 
 ## Website publication preparation — 16 November 2026
 
-The website preview and versioned downloads are being aligned with Android/web/source 0.1.6 build 12 and iOS 1.0.1 build 102. These are the functional versions installed earlier today. About already contains the direct layer toggle and selected-provider credits; this publication includes that current guide. The README describes current behaviour only and links here for progress. The signed Android APK matches all nine current native web assets. Earlier Route Maker website files are restored from the retained publication snapshot and kept alongside the latest downloads. Publication and live verification results follow when confirmed. No App Store submission is performed by this publication.
+The website preview and versioned downloads are aligned with Android/web/source 0.1.6 build 12 and iOS 1.0.1 build 102. These are the functional versions installed earlier today. About already contains the direct layer toggle and selected-provider credits; this publication includes that current guide. The README describes current behaviour only and links here for progress. The signed Android APK matches all nine current native web assets. Earlier Route Maker website files are restored from the retained publication snapshot and kept alongside the latest downloads. Cloudflare deployment `79323053-b8d5-4878-9523-f76cb5fd4646` is live. The preview, two-way layer switching, selected-provider About credits and homepage versions were verified. The downloaded APK matches its SHA-256 and all files in both Safari-expanded bundles match the packaged archives. All 64 tests, TypeScript and web build passed. Track Editor and all previous site files remain intact. [Publication and download verification](website/release-0.1.6.json). No App Store submission is performed by this publication.
