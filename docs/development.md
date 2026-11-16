@@ -1,5 +1,9 @@
 # Development and validation notes
 
+## Export name from restored terrain — local iOS build 103 / Android build 13
+
+A regression test reproduces a restored workspace whose drawing is named but whose retained terrain copy still has Created Route. Save previously exported the terrain copy's stale name. Export now takes sampled geometry from the selected track and the name from the current drawing, so the filename and both GPX name fields agree with Route Card. Tests also cover saving two separately named routes with Clear or Reset between them. The supplied XXtest2(2).gpx was inspected: both metadata/name and trk/name contain Created Route, confirming that the name was already wrong before Track Editor import. The restored-terrain case reproduces a matching export failure, though its history cannot be established from GPX alone. All 67 tests, TypeScript and native asset preparation passed. iOS 1.0.1 build 103 is installed and running on TestBed iOS; release-signed Android 0.1.6 build 13 is installed and launched on SM-A075F. Both native packages match current dist assets. Publication was subsequently authorised; see the release record below. Existing exported files are unchanged; re-export from the updated app to create a corrected file.
+
 ## Route Maker 0.1.6 / iOS 1.0.1 — publication
 
 - Save Route uses the chosen route name for the suggested GPX filename, rather than overriding it with Created Route. GPX metadata and track names continue to use the route name. Invalid filename characters are removed for the filesystem only.
@@ -66,3 +70,7 @@ Android remains 0.1.5, build 11, and the web preview retains the same current ap
 ## Website publication preparation — 16 November 2026
 
 The website preview and versioned downloads are aligned with Android/web/source 0.1.6 build 12 and iOS 1.0.1 build 102. These are the functional versions installed earlier today. About already contains the direct layer toggle and selected-provider credits; this publication includes that current guide. The README describes current behaviour only and links here for progress. The signed Android APK matches all nine current native web assets. Earlier Route Maker website files are restored from the retained publication snapshot and kept alongside the latest downloads. Cloudflare deployment `79323053-b8d5-4878-9523-f76cb5fd4646` is live. The preview, two-way layer switching, selected-provider About credits and homepage versions were verified. The downloaded APK matches its SHA-256 and all files in both Safari-expanded bundles match the packaged archives. All 64 tests, TypeScript and web build passed. Track Editor and all previous site files remain intact. [Publication and download verification](website/release-0.1.6.json). No App Store submission is performed by this publication.
+
+## Build 103 / 13 publication — 16 November 2026
+
+The user reports uploading iOS 1.0.1 build 103, removing the earlier submission, selecting the new build and submitting it for review. This does not establish Apple approval. Website publication and Git updates are now authorised. Browser and Android remain version 0.1.6; the corrected downloads use a new 0.1.6-build13 directory so earlier published downloads remain unchanged. The README describes current behaviour and links here for history. Verification is recorded in docs/website/release-0.1.6-build13.json.

@@ -2,14 +2,14 @@
 
 Draw, shape and share a walking route directly on the map.
 
-**iPhone 1.0.1 · build 102. Android 0.1.6 · build 12. Browser/source version 0.1.6.**
+**iPhone 1.0.1 · build 103. Android 0.1.6 · build 13. Browser/source version 0.1.6.**
 
 [Open in browser](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and instructions](https://appsbyonzy.dev/#baregps-route-maker) · [Development and validation notes](docs/development.md)
 
 ## Making a route
 
 - Tap the map to add points. Insert points between existing points, drag markers to move them, or select a point to delete it. Close loop joins the finish back to the start.
-- Name the route in its Route Card. Save Route suggests that name as the GPX filename; the GPX also contains the chosen route name. Invalid filename characters are removed from the suggested filename.
+- Name the route in its Route Card. Save Route suggests that name as the GPX filename; both GPX name fields also contain the current route name, including when saved terrain was restored from an earlier session. Invalid filename characters are removed from the suggested filename.
 - Choose a line colour and coordinate display in Settings. GPX always uses WGS84 coordinates.
 - Switch directly between OpenTopo and Satellite using the layers icon below the current-position button. The map position and route stay in place, the choice is remembered, and About credits follow the selected provider.
 - Undo/Redo changes while working. Reset asks for confirmation, clears the route and restores its default name; Undo restores the previous route.

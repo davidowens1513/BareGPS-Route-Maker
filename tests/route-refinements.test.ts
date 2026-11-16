@@ -1,5 +1,6 @@
 import { beforeEach, afterEach, it, expect, vi } from "vitest";
 import { newCreatedRoute } from "../src/create";
+import { exportGPX } from "../src/model";
 const state = vi.hoisted(() => ({
   store: new Map<string, unknown>(),
   maps: [] as any[],
@@ -43,7 +44,12 @@ vi.mock("../src/map", () => ({
     showPosition = vi.fn();
     retryTiles = vi.fn();
     hasTileError = () => false;
-    constructor() {
+    constructor(
+      public addPoint: (
+        index: number,
+        point: { lat: number; lon: number },
+      ) => void,
+    ) {
       state.maps.push(this);
     }
   },
@@ -77,9 +83,14 @@ afterEach(async () => {
   await new Promise((resolve) => setTimeout(resolve, 350));
   vi.unstubAllGlobals();
 });
-async function start(terrain = true) {
+async function start(
+  terrain = true,
+  savedName = "Created Route",
+  terrainName = savedName,
+) {
   const route = {
     ...newCreatedRoute(),
+    name: savedName,
     points: [
       { lat: 53, lon: -6, ele: 100 },
       { lat: 53.01, lon: -6, ele: 120 },
@@ -88,7 +99,9 @@ async function start(terrain = true) {
   state.store.set("baregps-route-maker-workspace-v1", {
     version: 1,
     created: route,
-    ...(terrain ? { createdTerrain: structuredClone(route) } : {}),
+    ...(terrain
+      ? { createdTerrain: { ...structuredClone(route), name: terrainName } }
+      : {}),
   });
   await import("../src/main");
   await vi.waitFor(() => expect(button("create-save").disabled).toBe(false));
@@ -116,6 +129,46 @@ it("keeps the chosen route name through automatic terrain fetching before saving
   expect(state.saveTrack.mock.calls[0]).toHaveLength(1);
   expect(state.saveTrack.mock.calls[0][0].name).toBe("Wicklow walk");
 });
+it("uses the visible route name when a restored terrain copy still has the old default", async () => {
+  await start(true, "My named route", "Created Route");
+  expect(
+    (document.getElementById("create-name") as HTMLInputElement).value,
+  ).toBe("My named route");
+  click("create-save");
+  await vi.waitFor(() => expect(state.saveTrack).toHaveBeenCalled());
+  expect(state.saveTrack.mock.calls[0][0].name).toBe("My named route");
+  const xml = new DOMParser().parseFromString(
+    exportGPX(state.saveTrack.mock.calls[0][0]),
+    "application/xml",
+  );
+  expect(
+    [...xml.querySelectorAll("metadata > name, trk > name")].map(
+      (node) => node.textContent,
+    ),
+  ).toEqual(["My named route", "My named route"]);
+});
+it.each(["reset", "clear"])(
+  "keeps two separately named exports after %s and redrawing",
+  async (action) => {
+    await start();
+    rename("First walk");
+    click("create-save");
+    await vi.waitFor(() => expect(state.saveTrack).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(button("create-save").disabled).toBe(false));
+    click(`create-${action}`);
+    click(`confirm-${action}-created`);
+    state.maps[0].addPoint(0, { lat: 53.02, lon: -6 });
+    state.maps[0].addPoint(1, { lat: 53.03, lon: -6 });
+    rename("Second walk");
+    state.terrainJob = async (track) => track;
+    click("create-save");
+    await vi.waitFor(() => expect(state.saveTrack).toHaveBeenCalledTimes(2));
+    expect(state.saveTrack.mock.calls.map((call) => call[0].name)).toEqual([
+      "First walk",
+      "Second walk",
+    ]);
+  },
+);
 it("switches directly with one icon, remembers the layer and updates About credits", async () => {
   await start();
   click("map-layer-toggle");

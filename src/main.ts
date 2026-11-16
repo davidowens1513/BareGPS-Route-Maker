@@ -408,10 +408,12 @@ function render() {
 }
 async function exportTrack(track: Track) {
   if (busy) return;
+  // Terrain supplies the sampled geometry; the drawing owns the current name.
+  const namedTrack = { ...track, name: draft().name };
   busy = true;
   render();
   try {
-    if (await saveTrack(track))
+    if (await saveTrack(namedTrack))
       notification(
         Capacitor.isNativePlatform()
           ? "GPX saved to your chosen location."
