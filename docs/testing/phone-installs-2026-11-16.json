@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-16",
+  "app": "BareGPS Route Maker",
+  "ios": {
+    "version": "1.0.1",
+    "build": 102,
+    "device": "TestBed iOS",
+    "result": "Installed and launched through Xcode"
+  },
+  "android": {
+    "version": "0.1.6",
+    "build": 12,
+    "device": "SM-A075F Android 16",
+    "result": "Android Studio installRelease succeeded; installed on one device",
+    "release_certificate_sha256": "52e722bdccd99854e77600e1e5e2b44984f6e3e0720b833d2a9fe77f0b373c63",
+    "apk_sha256": "2214b1dd353fad41eecc1392a1d7f6879f912fd6106d2ae3a70c09cd6adf8a24",
+    "web_assets_verified": 9
+  },
+  "data_preservation": "Updated existing packages using matching signing identities; no uninstall or data clear performed.",
+  "publication": "No website publication or Apple upload performed."
+}

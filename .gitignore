@@ -30,3 +30,7 @@ node_modules
 android/app/build
 android/build
 .vite
+
+# Local Android Studio and Kotlin state
+android/.idea/
+android/.kotlin/

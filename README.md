@@ -2,7 +2,7 @@
 
 Draw, shape and share a hiking route directly on the map.
 
-**Current versions: iOS 1.0.0 (build 101); Android 0.1.5 (build 11); web/source package 0.1.5.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
+**Native project versions: iOS 1.0.1 (build 102); Android 0.1.6 (build 12). Source package: 0.1.6; published web version: 0.1.5.** This is the standalone green Route Maker, split from the former combined BareGPS Route Planner on 10 November 2026. There is no Edit screen or Open in Edit handoff.
 
 [Browser preview](https://appsbyonzy.dev/tools/baregps-route-maker/) · [Downloads and platform instructions](https://appsbyonzy.dev/#tools) · [Source](https://github.com/davidowens1513/BareGPS-Route-Maker) · [Development and validation notes](docs/development.md)
 
